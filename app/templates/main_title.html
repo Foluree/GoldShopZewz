@@ -33,6 +33,24 @@
     }
     .hero h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 48px); }
     .hero p { margin: 0; color: var(--muted); max-width: 700px; }
+    .hero-actions { margin-top: 16px }
+    .profile-link {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 700;
+      color: #111827;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 8px 22px rgba(245,158,11,.22);
+    }
+    .profile-link:visited {
+      color: #111827;
+    }
+    .profile-link:hover {
+      filter: brightness(1.06);
+    }
     .section-title { margin: 28px 0 14px; font-size: 22px; }
     .grid {
       display: grid;
@@ -78,6 +96,9 @@
     <section class="hero">
       <h1>Магазин золота</h1>
       <p>Карточки товаров и карточки точек магазинов. Этот шаблон можно подключить к базе данных, оплате и личному кабинету.</p>
+      <div class="hero-actions">
+        <a class="profile-link" href="/profile">Перейти в профиль</a>
+      </div>
     </section>
 
     <h2 class="section-title">Предложения</h2>

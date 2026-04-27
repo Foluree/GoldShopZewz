@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from datetime import data
+from datetime import date
 
 class BayProfileItem(BaseModel):
     id: int
@@ -7,7 +7,7 @@ class BayProfileItem(BaseModel):
     quantity: int
     total_price: float
     status: str
-    bayitem_at: data
+    bayitem_at: date
 
 class UserProfiles(BaseModel):
     id: int

@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Request
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
+#from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse#, JSONResponse
 from app.main_title_router import templates
 from app.models.profile_model import UserProfiles
 
 router = APIRouter(
-    prefix="profile",
+    prefix="/profile",
     tags=["profile"]
 )
 
 profile_data = UserProfiles(
     id=1,
-    full_name="Дима Пригожин",
+    full_name="Дима Пригожин", 
     email="test@gmail.com",
     city="Вильнес",
     bonus_point=240,
@@ -36,7 +36,7 @@ profile_data = UserProfiles(
 )
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("", response_class=HTMLResponse)
 async def profile(requesto: Request):
     return templates.TemplateResponse(
         "profile.html",
