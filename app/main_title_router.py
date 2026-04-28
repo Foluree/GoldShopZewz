@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 from app.models.shops_model import OrderIn
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import text
+from app.bd_and_config.postgres_engine import get_session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="",
@@ -55,7 +58,12 @@ offers = [
 ]
 
 @router.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+async def home(request: Request, session: AsyncSession = Depends(get_session)):
+    shops_result = await session.execute(text("SELECT * FROM shop ORDER BY id"))
+    offers_result = await session.execute(text("SELCET * FROM offers ORDER BY id"))
+    shops = [dict(row) for row in shops_result.mappings().all()]
+    offers = [dict(row) for row in offers_result.mappings().all()]
+
     return templates.TemplateResponse(
         "main_title.html",
         {
@@ -76,9 +84,20 @@ async def get_offers():
 
 
 @router.post("/api/order")
-async def create_order(order: OrderIn):
-    offer = next((o for o in offers if o["id"] == order.offer_id), None)
-    shop = next((s for s in shops if s["id"] == order.shop_id), None)
+async def create_order(order: OrderIn, session: AsyncSession = Depends(get_session)):
+    #offer = next((o for o in offers if o["id"] == order.offer_id), None)
+    #shop = next((s for s in shops if s["id"] == order.shop_id), None)
+    offers_result = await session.execute(
+        text("SELECT * FROM offers WHERE id = :offer_id"),
+        {"offer_id":order.offer_id},
+    )
+    shop_result = await session.execute(
+        text("SELCET * FROM shops WHERE id = :shop_id"),
+        {"shop_id":order.shop_id},
+    )
+
+    offer = offers_result.mappings().first()
+    shop = shop_result.mappings().first()
 
     if not offer:
         return JSONResponse(status_code=404, content={"message": "Товар не найден"})

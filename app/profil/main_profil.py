@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 #from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse#, JSONResponse
 from app.main_title_router import templates
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.bd_and_config.postgres_engine import get_session
 from app.models.profile_model import UserProfiles
 
 router = APIRouter(
@@ -37,7 +40,13 @@ profile_data = UserProfiles(
 
 
 @router.get("", response_class=HTMLResponse)
-async def profile(requesto: Request):
+async def profile(requesto: Request, session: AsyncSession = Depends(get_session)):
+    user_result = await session.execute(text("SELECT * FROM users WHERE id = 1"))
+    purchases_result = await session.execute(
+        text("SELECT id, title, quantity, total_price, status, bayitem_at "
+             "FROM purchases WHERE user_id = 1 ORDER BY id")
+    )
+    
     return templates.TemplateResponse(
         "profile.html",
         {
@@ -45,3 +54,5 @@ async def profile(requesto: Request):
             "profile": profile_data
         }
     )
+
+#@router.get("/api")
