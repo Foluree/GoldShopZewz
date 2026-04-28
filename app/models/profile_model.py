@@ -1,4 +1,4 @@
-from pydantic import EmailStr
+#from pydantic import EmailStr
 from datetime import date
 from app.bd_and_config.postgres_engine import Base_Pg
 from sqlalchemy.orm import Mapped, mapped_column, relationship
