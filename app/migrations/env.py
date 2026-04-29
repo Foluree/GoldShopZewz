@@ -13,7 +13,9 @@ from os.path import abspath, dirname
 from app.bd_and_config.postgres_engine import Base_Pg
 from app.bd_and_config.config1 import setbase
 from app.models.profile_model import BayProfileItem, UserProfiles
-from app.models.shops_model import OrderIn
+#from app.models.shops_model import OrderIn
+from app.models.shops1_model import Shops
+from app.models.offers_model import Offers
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

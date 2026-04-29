@@ -1,13 +1,6 @@
-#from pydantic import Field
-from app.bd_and_config.postgres_engine import Base_Pg
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer
+from pydantic import Field, BaseModel
 
-class OrderIn(Base_Pg):
-    __tablename__ = "OrderIn"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-
-    offer_id: Mapped[int] = mapped_column(Integer)
-    shop_id: Mapped[int] = mapped_column(Integer)
-    quantity: Mapped[int] = mapped_column(Integer, default=1)
+class OrderIn(BaseModel):
+    offer_id: int = Field(..., gt=0)
+    shop_id: int = Field(..., gt=0)
+    quantity: int = Field(1, gt=0)

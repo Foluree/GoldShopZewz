@@ -4,7 +4,7 @@ from sqlalchemy import String
 #from datetime import date
 
 class Shops(Base_Pg):
-    __tablename__ = "Shops"
+    __tablename__ = "shops"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 

@@ -6,12 +6,14 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.bd_and_config.postgres_engine import get_session
 from app.models.profile_model import UserProfiles
+from app.bd_request.local_profile_request import _load_first_exito, response_ho, purchase_se, response_hos, purchase_ses
 
 router = APIRouter(
     prefix="/profile",
     tags=["profile"]
 )
 
+"""
 profile_data = UserProfiles(
     id=1,
     full_name="Дима Пригожин", 
@@ -37,21 +39,36 @@ profile_data = UserProfiles(
         }
     ]
 )
-
+"""
 
 @router.get("", response_class=HTMLResponse)
 async def profile(requesto: Request, session: AsyncSession = Depends(get_session)):
-    user_result = await session.execute(text("SELECT * FROM users WHERE id = 1"))
-    purchases_result = await session.execute(
-        text("SELECT id, title, quantity, total_price, status, bayitem_at "
-             "FROM purchases WHERE user_id = 1 ORDER BY id")
-    )
+    users = await _load_first_exito(session, [
+                                        response_hos,
+                                        response_hos,],
+                                    )
+
+    purchases = await _load_first_exito(session,
+                                        [purchase_ses,
+                                         purchase_ses,],
+                                        )
     
+    print(users)
+
+    user = users[0] if users else {
+        "full_name":"Пользователь",
+        "email":"-",
+        "city":"-",
+        "bonus_point":0
+    }
+
+    user["purchasesAll"] = purchases
+
     return templates.TemplateResponse(
         "profile.html",
         {
             "request": requesto,
-            "profile": profile_data
+            "profile": user
         }
     )
 

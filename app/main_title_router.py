@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
 from app.bd_and_config.postgres_engine import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.bd_request.nortal_request import _fetch_all, _fetch_one
 
 router = APIRouter(
     prefix="",
@@ -12,6 +13,7 @@ router = APIRouter(
 )
 templates = Jinja2Templates(directory="app/templates")
 
+"""
 shops = [
     {
         "id": 1,
@@ -56,13 +58,15 @@ offers = [
         "desc": "Выгодная покупка по лучшей цене за грамм.",
     },
 ]
+"""
+
+
 
 @router.get("/", response_class=HTMLResponse)
 async def home(request: Request, session: AsyncSession = Depends(get_session)):
-    shops_result = await session.execute(text("SELECT * FROM shop ORDER BY id"))
-    offers_result = await session.execute(text("SELCET * FROM offers ORDER BY id"))
-    shops = [dict(row) for row in shops_result.mappings().all()]
-    offers = [dict(row) for row in offers_result.mappings().all()]
+
+    shops = await _fetch_all(session, "shops")
+    offers = await _fetch_all(session, "offers")
 
     return templates.TemplateResponse(
         "main_title.html",
@@ -74,30 +78,21 @@ async def home(request: Request, session: AsyncSession = Depends(get_session)):
     )
 
 @router.get("/api/shops")
-async def get_shops():
+async def get_shops(session: AsyncSession = Depends(get_session)):
+    shops = await _fetch_all(session, "shops")
     return {"shops": shops}
 
 
 @router.get("/api/offers")
-async def get_offers():
+async def get_offers(session: AsyncSession = Depends(get_session)):
+    offers = await _fetch_all(session, "offers")
     return {"offers": offers}
 
 
 @router.post("/api/order")
 async def create_order(order: OrderIn, session: AsyncSession = Depends(get_session)):
-    #offer = next((o for o in offers if o["id"] == order.offer_id), None)
-    #shop = next((s for s in shops if s["id"] == order.shop_id), None)
-    offers_result = await session.execute(
-        text("SELECT * FROM offers WHERE id = :offer_id"),
-        {"offer_id":order.offer_id},
-    )
-    shop_result = await session.execute(
-        text("SELCET * FROM shops WHERE id = :shop_id"),
-        {"shop_id":order.shop_id},
-    )
-
-    offer = offers_result.mappings().first()
-    shop = shop_result.mappings().first()
+    shop = await _fetch_one(session, "shops", order.shop_id)
+    offer = await _fetch_one(session, "offers", order.offer_id)
 
     if not offer:
         return JSONResponse(status_code=404, content={"message": "Товар не найден"})
