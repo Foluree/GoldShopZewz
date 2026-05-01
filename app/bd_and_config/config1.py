@@ -22,6 +22,9 @@ class Setting_base(BaseSettings):
         env_file_encoding="utf-8"
     )
 
+    HASED: str
+    HASED_CODING: str
+
 setbase = Setting_base()
 
 #print(setbase.DATABASEPG_URL)

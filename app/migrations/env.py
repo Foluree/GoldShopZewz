@@ -16,6 +16,7 @@ from app.models.profile_model import BayProfileItem, UserProfiles
 #from app.models.shops_model import OrderIn
 from app.models.shops1_model import Shops
 from app.models.offers_model import Offers
+from app.models.model_user.model_users_postgress import users
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
