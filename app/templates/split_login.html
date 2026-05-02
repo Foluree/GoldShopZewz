@@ -200,12 +200,12 @@
                 <p class="subtitle">Черный экран авторизации без серверной проверки.</p>
                 <div class="field">
                     <label for="email">Email</label>
-                    <input id="email" name="email" type="email" placeholder="you@example.com" />
+                    <input id="email" name="email_us" type="email" placeholder="you@example.com" />
                 </div>
 
                 <div class="field">
                     <label for="password">Password</label>
-                    <input id="password" name="password" type="password" placeholder="••••••••" />
+                    <input id="password" name="passuse" type="password" placeholder="••••••••" />
                 </div>
 
                 <button type="submit" class="btn">Login</button>
@@ -239,7 +239,7 @@
         email.addEventListener('input', updateScense);
         password.addEventListener('input', updateScense);
 
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const hasError = !email.value.trim() || !password.value.trim();
 
@@ -251,6 +251,36 @@
 
             hint.textContent = 'Демо: форма заполнена. Проверка на сервере пока отключена.';
             setTimeout(() => world.classList.remove('error'), 350);
+
+            try {
+                hint.textContent = 'Check database server...';
+                const response = await fetch('/login/log', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type":"application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        email_us: email.value.trim(),
+                        passuse: password.value
+                    })
+                });
+                
+                if (!response.ok) {
+                    world.classList.add('error');
+                    window.textContent = "Incorect email or password."
+                    return;
+                } 
+
+                hint.textContent = "Enterene complited. Transition the profile..."
+                window.location.href = '/profile'
+                
+            } catch (error) {
+                world.classList.add('error');
+                hint.textContent = "Ошибка сети. По пробуйте еще раз.";
+            } finally {
+                setTimeout(() => world.classList.remove("error"), 450);
+            }
         });
     </script>
 </body>

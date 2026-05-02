@@ -1,0 +1,28 @@
+            try {
+                hint.textContent = 'Проверяем данные на сервере...';
+                const response = await fetch('/login/log', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email_us: email.value.trim(),
+                        passuse: password.value
+                    })
+                });
+
+                if (!response.ok) {
+                    world.classList.add('error');
+                    hint.textContent = 'Неверный email или пароль.';
+                    return;
+                }
+
+                hint.textContent = 'Вход выполнен. Переход в профиль...';
+                window.location.href = '/profile';
+            } catch (error) {
+                world.classList.add('error');
+                hint.textContent = 'Ошибка сети. Попробуйте снова.';
+            } finally {
+                setTimeout(() => world.classList.remove('error'), 450);
+            }
