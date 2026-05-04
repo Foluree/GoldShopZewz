@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Split Reality - Register</title>
+    <style>
+        :root {
+            --bg: #070b14;
+            --panel: #10182a;
+            --line: rgba(255,255,255,.15);
+            --text: #e7ebf3;
+            --muted: #93a1c4;
+            --ok: #8de2a8;
+            --warn: #ff7f7f;
+            --accent: #67a0ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at 20% 20%, #172744 0%, var(--bg) 45%);
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            min-height: 100vh;
+        }
+
+        .scene {
+            position: relative;
+            overflow: hidden;
+            border-right: 1px solid var(--line);
+            background: linear-gradient(180deg, #0f1a30 0%, #060912 100%)
+        }
+
+        .scene-layer {
+            position: absolute;
+            inset: 0;
+            transition: opacity .55s ease, transform .8s ease, filter .6s ease;
+        }
+
+        .day-night {
+            background:
+                radial-gradient(circle at 70% 30%, rgba(255,227,139,.55) 0%, transparent 40%),
+                radial-gradient(circle at 22% 20%, rgba(163,191,255,.5) 0%, transparent 35%),
+                linear-gradient(180deg,#0b1530 0%,#111f44 40%, #233f77 100%);
+            opacity:.35;
+        }
+
+        .firmament {
+            background:
+                radial-gradient(140% 60% at 50% 78%, rgba(57,132,255,.34), transparent 70%),
+                radial-gradient(95% 95% at 50% 110%, rgba(170,220,255,.24), transparent 70%);
+            transform: translateY(22px) scale(.97);
+            opacity: 0;
+        }
+
+        .land {
+            background:
+                radial-gradient(55% 28% at 50% 88% ,rgba(85,183,104,.46),transparent 70%),
+                radial-gradient(52% 52% at 50% 102%, rgba(102,141,86,.44),transparent 70%);
+            transform: translateY(28px) scale(.95);
+            opacity:0;
+        }
+
+        .humans {
+            position:absolute;
+            left:50%;
+            bottom:9%;
+            width:92px;
+            height:92px;
+            transform:translateX(-50%) scale(.82);
+            opacity:0;
+            transition:all .55s ease;
+        }
+
+        .humans::before,
+        .humans::after {
+            content: "";
+            position:absolute;
+            bottom:0;
+            width:30px;
+            height:62px;
+            border-radius:18px 18px 8px 8px;
+            background: linear-gradient(180deg,#f2dfd7,#b59387);
+            box-shadow: 0 0 18px rgba(255,230,206,.25);
+        }
+
+        .humans::before { left:12px; }
+        .humans::after { right:12px; }
+
+        .scene-status {
+            position:absolute;
+            left:24px;
+            bottom:22px;
+            font-size:14px;
+            color:var(--muted);
+            background:rgba(0,0,0,.3);
+            border:1px solid var(--line);
+            border-radius:12px;
+            padding:10px 14px;
+        }
+
+        .form-side {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:36px;
+            background:#090f1d;
+        }
+
+        .card {
+            width:100%;
+            max-width:430px;
+            padding:28px;
+            border-radius:18px;
+            background:var(--panel);
+            border:1px solid var(--line);
+            box-shadow:0 18px 35px rgba(0,0,0,.35);
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size:30px;
+            line-height:1.1;
+        }
+
+        .field { margin-bottom: 14px; }
+
+        .subtitle {
+            margin:0 0 20px;
+            color:var(--muted);
+            font-size:14px;
+        }
+
+        label {
+            display:block;
+            margin-bottom:6px;
+            font-size:13px;
+            color:#c7d2f2;
+        }
+
+        input {
+            width:100%;
+            border:1px solid rgba(255,255,255,.15);
+            background:rgba(9,15,29,.8);
+            color:var(--text);
+            border-radius:12px;
+            padding:12px 13px;
+            font-size:15px;
+            outline:none;
+            transition:border-color .2s ease, box-shadow .2s ease;
+        }
+
+        input:focus {
+            border-color:var(--accent);
+            box-shadow:0 0 0 3px rgba(103,160,255,.2);
+        }
+
+        .help {
+            margin-top:10px;
+            min-height:20px;
+            color:var(--muted);
+            font-size:13px;
+        }
+
+        .help.error { color: var(--warn); }
+
+        .btn {
+            width:100%;
+            margin-top:8px;
+            border:none;
+            border-radius:12px;
+            padding:12px;
+            color:white;
+            background:linear-gradient(90deg,#4c7dff,#6ab2ff);
+            font-weight:600;
+            cursor:pointer;
+        }
+
+        .scene.broken .scene-layer { filter:grayscale(.8) brightness(.35); }
+        .scene.broken .scene-status { color:var(--warn); }
+
+        @media (max-width:900px) {
+            .split { grid-template-columns:1fr; }
+            .scene { min-height:42vh;border-right:none;border-bottom:1px solid var(--line); }
+        }
+    </style>
+</head>
+<body>
+    <main class="split">
+        <section class="scene" id="scene">
+            <div class="scene-layer day-night" id="dayNight"></div>
+            <div class="scene-layer firmament" id="firmament"></div>
+            <div class="scene-layer land" id="land"></div>
+            <div class="humans" id="humans"></div>
+            <p class="scene-status" id="sceneStatus">1 day:Light and dark.</p>
+        </section>
+
+        <section class="form-side">
+            <form class="card" id="registerForm" novalidate>
+                <h1>Split Reality</h1>
+                <p class="subtitle">Регистация: визуал «Бытия» реагирует на ваши данные.</p>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" required />
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" minlength="6" placeholder="Minimun 6 characters" required />
+                </div>
+
+                <div class="field">
+                    <label for="passwordConfirm">Repit password</label>
+                    <input id="passwordConfirm" name="passwordConfirm" type="password" minlength="6" placeholder="Repit password" required />
+                </div>
+
+                <button class="btn" type="submit">Create accaunt</button>
+                <div class="help" id="help">Fill in the fields, to world get ready by stages.</div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const passwordConfirm = document.getElementById('passwordConfirm');
+        const scene = document.getElementById('scene');
+        const dayNight = document.getElementById('dayNight');
+        const firmament = document.getElementById('firmament');
+        const land = document.getElementById('land');
+        const humans = document.getElementById('humans');
+        const status = document.getElementById('sceneStatus');
+        const help = document.getElementById('help');
+        const form = document.getElementById('registerForm');
+
+        function updateScene() {
+            const hasEmail = email.value.trim().length > 3;
+            const hasPassword = password.value.length >= 6;
+            const passwordsMatch = password.value && password.value === passwordConfirm.value;
+
+            scene.classList.remove('broken');
+            help.classList.remove('error');
+
+            dayNight.style.opacity = hasEmail ? '0.95' : '0.35';
+            firmament.style.opacity = hasEmail ? "0.9":"0";
+            firmament.style.transform = hasEmail ? 'translateY(0) scale(1)' : 'translateY(22px) scale(.97)';
+
+            land.style.opacity = hasPassword ? '0.95' : '0';
+            land.style.transform = hasPassword ? 'translateY(0) scale(1)':'translateY(28px) scale(.95)';
+
+            humans.style.opacity = passwordsMatch ? '0.95':'0';
+            humans.style.transform = passwordsMatch ? 'translateX(-50%) scale(1)':'translateX(-50%) scale(.82)';
+
+            if (!hasEmail) {
+                status.textContent = '1 day: light and dark.'
+            } else if (!hasPassword) {
+                status.textContent =  '2 day: Water separation, appers firmament.'
+            } else if (!passwordsMatch && passwordConfirm.value.length > 0) {
+                status.textContent = 'Error: structure collapse - password no coincide.';
+                scene.classList.add('broken');
+                help.textContent = 'Password no coincide.';
+                help.classList.add('error');
+            } else if (passwordsMatch) {
+                status.textContent = '3 day: eart, life and humans appeared.';
+                help.textContent = 'Form ready to seding.'
+            } else {
+                status.textContent = '3 day: forming eart.'
+            }
+        }
+
+        [email,password,passwordConfirm].forEach(el => el.addEventListener('input',updateScene));
+
+        form.addEventListener('submit',(event) => {
+            updateScene();
+            const valid = email.checkValidity() && password.checkValidity() && password.value === passwordConfirm.value;
+            if (!valid) {
+                event.preventDefault();
+                scene.classList.add('broken');
+                status.textContent = "Error: data no full or no faithful.";
+                help.textContent = "Check email and coincidence password."
+                help.classList.add('error')
+            }
+        });
+    </script>
+</body>
+</html>

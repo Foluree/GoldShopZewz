@@ -1,4 +1,6 @@
-from fastapi import APIRouter#, Depends, Response
+from fastapi import APIRouter, Request#, Depends, Response
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from app.models.model_register import Registro
 from app.models.model_user.users_seo import UsersSeo
 from app.bd_request.hased_password.hased_cookie import get_cookie_password
@@ -9,7 +11,18 @@ router = APIRouter(
     tags=["Registor User"]
 )
 
-@router.post("/")
+templating = Jinja2Templates(directory="app/templates")
+
+@router.get("/", response_class=HTMLResponse)
+async def regist_html(request: Request):
+    return templating.TemplateResponse(
+        "split_register.html",{
+            "request":request,
+        }
+    )
+
+
+@router.post("/api")
 async def regist_use(user_data: Registro):
     mb_new_user = await UsersSeo.find_one_finger(email_us=user_data.email_us)
     if mb_new_user:
