@@ -204,31 +204,33 @@
         </section>
 
         <section class="form-side">
-            <form class="card" id="registerForm" novalidate>
+            <form class="card" id="registerForm" action="/regist/log" method="post" novalidate>
                 <h1>Split Reality</h1>
                 <p class="subtitle">Регистация: визуал «Бытия» реагирует на ваши данные.</p>
 
                 <div class="field">
                     <label for="email">Email</label>
-                    <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" required />
+                    <input id="email" name="email_us" type="email" autocomplete="email" placeholder="name@example.com" required />
                 </div>
 
                 <div class="field">
                     <label for="password">Password</label>
-                    <input id="password" name="password" type="password" minlength="6" placeholder="Minimun 6 characters" required />
+                    <input id="password" name="passuse" type="password" minlength="6" placeholder="Minimun 6 characters" required />
                 </div>
 
                 <div class="field">
                     <label for="passwordConfirm">Repit password</label>
-                    <input id="passwordConfirm" name="passwordConfirm" type="password" minlength="6" placeholder="Repit password" required />
+                    <input id="passwordConfirm" name="passuse_confirm" type="password" minlength="6" placeholder="Repit password" required />
                 </div>
 
                 <button class="btn" type="submit">Create accaunt</button>
-                <div class="help" id="help">Fill in the fields, to world get ready by stages.</div>
+                <div class="help{% if error_message %} error{% endif %}" id="help">
+                    {% if error_message %}{{ error_message }}{% else %}Fill in fields, to world get ready ty stages.{% endif %}
+                </div>
             </form>
         </section>
     </main>
-
+            
     <script>
         const email = document.getElementById('email');
         const password = document.getElementById('password');

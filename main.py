@@ -8,7 +8,7 @@ from app.profil.register_user import router as router_regist
 
 app = FastAPI(title="Gold Shop")
 
-app.include_router(router_profile)
-app.include_router(router_main_lob) 
+app.include_router(router_profile)                         
+app.include_router(router_main_lob)                                          
 app.include_router(router_login)
 app.include_router(router_regist)
