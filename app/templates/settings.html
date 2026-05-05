@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <meta charset="viewport" content="wodth=device-width, initial-scale=1" />
+    <title>Settings Account</title>
+    <style>
+        :root {
+            --bg: #f1f3f4;
+            --surface: #ffffff;
+            --text: #202124;
+            --muted: #5f6368;
+            --border: #dadce0;
+            --primary: #1a73e8;
+            --danger: #d93025;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: grid;
+            place-items: center;
+            padding: 16px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 460px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 2px 8
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        p {
+            margin: 0 0 20px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .actions {
+            display: grid;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .2s ease, border-color .2s ease;
+        }
+
+        .btn:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-primary {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #e8f0fe;
+        }
+
+        .btn-danger {
+            border-color: #f7c6c1;
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #fce8e6;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1>Settings accaunts</h1>
+        <p>Minimun version list the stile Google: only button login, register and relog.</p>
+
+        <div class="actions">
+            <button class="btn btn-primary" type="button">Login</button>
+            <button class="btn" type="button">Register</button>
+            <button class="btn btn-danger" type="button">Relogin</button>
+        </div>
+    </main>
+</body>
+</html>
