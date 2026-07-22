@@ -27,4 +27,4 @@ class Setting_base(BaseSettings):
 
 setbase = Setting_base()
 
-#print(setbase.DATABASEPG_URL)
+#print(setbase.DATABASEPG_URL) 

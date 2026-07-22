@@ -24,6 +24,6 @@ def create_newst_token(count: dict) -> str:
 
 async def autotification_user(email_us: EmailStr, passuse: str):
     login = await UsersSeo.find_one_finger(email_us=email_us)
-    if not login and not verify_cookie(passuse, login.hases_password_us):
+    if not login or not verify_cookie(passuse, login.hases_password_us): #login and
         return None
     return login
