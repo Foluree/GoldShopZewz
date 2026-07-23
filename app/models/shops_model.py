@@ -4,3 +4,14 @@ class OrderIn(BaseModel):
     offer_id: int = Field(..., gt=0)
     shop_id: int = Field(..., gt=0)
     quantity: int = Field(1, gt=0)
+
+class OfferCreate(BaseModel):
+    title: str = Field(..., min_length=1)
+    price: float =  Field(..., gt=0)
+    desc: str = Field(..., min_length=1)
+
+class ShopCreate(BaseModel):
+    name: str = Field(..., min_length=1)
+    address: str = Field(..., min_length=1)
+    hours: str = Field(..., min_length=1)
+    phone: str = Field(..., min_length=1)

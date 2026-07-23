@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
-from app.models.shops_model import OrderIn
+from app.models.shops_model import OrderIn, ShopCreate, OfferCreate
+from app.models.shops1_model import Shops
+from app.models.offers_model import Offers  
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import text
+from sqlalchemy import text, insert
 from app.bd_and_config.postgres_engine import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.bd_request.nortal_request import _fetch_all, _fetch_one
@@ -28,6 +30,30 @@ async def home(request: Request, session: AsyncSession = Depends(get_session)):
         }
     )
 
+@router.post("/api/shops", status_code=201)
+async def create_shop(shop: ShopCreate, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(
+        insert(Shops)
+        .values(**shop.model_dump())
+        .returning(Shops.id, Shops.name, Shops.address, Shops.hours, Shops.phone)
+    )
+    await session.commit()
+    create_shop = result.mappings().one()
+    return {"shop": dict(create_shop)}
+
+
+@router.post("/api/offers", status_code=201)
+async def create_offer(offer: OfferCreate, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(
+        insert(Offers)
+        .values(**offer.model_dump())
+        .returning(Offers.id, Offers.title, Offers.price, Offers.price)
+    )
+    await session.commit()
+    create_offer = result.mappings().one()
+    return {"Offers": dict(create_offer)}
+
+
 @router.get("/api/shops")
 async def get_shops(session: AsyncSession = Depends(get_session)):
     shops = await _fetch_all(session, "shops")
@@ -40,7 +66,7 @@ async def get_offers(session: AsyncSession = Depends(get_session)):
     return {"offers": offers}
 
 
-@router.post("/api/order")
+@router.post("/api/order", status_code=201)
 async def create_order(order: OrderIn, session: AsyncSession = Depends(get_session)):
     shop = await _fetch_one(session, "shops", order.shop_id)
     offer = await _fetch_one(session, "offers", order.offer_id)
@@ -50,10 +76,31 @@ async def create_order(order: OrderIn, session: AsyncSession = Depends(get_sessi
     if not shop:
         return JSONResponse(status_code=404, content={"message": "Магазин не найден"})
 
+    order_result = await session.execute(
+        text(
+            'INSERT INTO "OrderIn" (offer_id, shop_id, quantity) '
+            'VALUES (:offer_id, :shop_id, :quantity) '
+            'RETURNING id, offer_id, shop_id, quantity '
+        ),
+        order.model_dump(),
+    )
+
+    await session.commit()
+    created_order = dict(order_result.mappings().one())
+
     total = offer["price"] * order.quantity
     return {
         "message": (
             f"Заказ принят: {order.quantity} × {offer['title']} "
             f"в точке '{shop['name']}'. Сумма: {total:.2f} €"
-        )
+        ),
+        "order": created_order
     }
+
+
+
+
+
+
+
+
