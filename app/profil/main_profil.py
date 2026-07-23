@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Request, Depends
 #from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse#, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse#, JSONResponse
 from app.main_title_router import templates
-from sqlalchemy import text
+#from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.bd_and_config.postgres_engine import get_session
 #from app.models.profile_model import UserProfiles
 from app.bd_request.local_profile_request import _load_first_exito, response_ho, purchase_se, response_hos, purchase_ses
+from app.bd_request.hased_password.hased_cookie import verify_accses_token
 
 router = APIRouter(
     prefix="/profile",
@@ -16,6 +17,11 @@ router = APIRouter(
 
 @router.get("", response_class=HTMLResponse)
 async def profile(requesto: Request, session: AsyncSession = Depends(get_session)):
+    token = requesto.cookies.get("booking_accses_token")
+    user_id = verify_accses_token(token)
+    if not user_id:
+        return RedirectResponse(url="/regist/", status_code=303)
+    
     users = await _load_first_exito(session, [
                                         response_hos,
                                         response_hos,],

@@ -3,7 +3,7 @@ from passlib.context import CryptContext
 from pydantic import EmailStr
 from app.models.model_user.users_seo import UsersSeo
 from datetime import timedelta, datetime
-from jose import jwt
+from jose import jwt, JWTError
 
 cmd_txt = CryptContext(schemes="bcrypt", deprecated="auto")
 
@@ -27,3 +27,19 @@ async def autotification_user(email_us: EmailStr, passuse: str):
     if not login or not verify_cookie(passuse, login.hases_password_us): #login and
         return None
     return login
+
+def verify_accses_token(token: str | None) -> str | None:
+    if not token:
+        return None
+
+    try:
+        payload = jwt.decode(
+            token,
+            setbase.HASED,
+            algorithms=[setbase.HASED_CODING],
+        )
+
+    except JWTError:
+        return None
+
+    return payload.get("sub")
