@@ -16,3 +16,19 @@ async def _load_first_exito(session: AsyncSession, queries: list[str]) -> list[d
             print(e)
             continue
     return []
+
+async def load_auth_user(session: AsyncSession, user_id: int) -> dict | None:
+    response = await session.execute(
+        text(
+            "SELECT id, email_us FROM users WHERE id = :user_id"
+        ),
+        {"user_id": user_id}
+    )
+
+    row = response.mappings().first()
+    if not row:
+        return None
+    return dict(row)
+
+def get_username_from_email(email: str) -> str:
+    return email.split("@", 1)[0]

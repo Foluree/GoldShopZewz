@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.models.model_register import Registro
 from app.models.model_user.users_seo import UsersSeo
-from app.bd_request.hased_password.hased_cookie import get_cookie_password
+from app.bd_request.hased_password.hased_cookie import get_cookie_password, create_newst_token
 from app.bd_and_config.error_bs.main_error import UserAllNoneExit
 
 router = APIRouter(
@@ -28,6 +28,7 @@ async def _create_user(user_data: Registro):
         raise UserAllNoneExit
     refresho = get_cookie_password(user_data.passuse)
     await UsersSeo.finger_allin(email_us=user_data.email_us, hases_password_us=refresho)
+    return await UsersSeo.find_one_finger(email_us=user_data.email_us)
 
 @router.post("/api")
 async def register_use_api(user_data: Registro):
@@ -50,6 +51,7 @@ async def regist_use_form(
     
     try:
         await _create_user(Registro(email_us=email_us,passuse=passuse))
+        user = await _create_user(Registro(email_us=email_us, passuse=passuse))
 
     except HTTPException as e:
         if e.status_code == 409:
