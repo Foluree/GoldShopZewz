@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Form
 #from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse#, JSONResponse
 from app.main_title_router import templates
@@ -12,7 +12,10 @@ from app.bd_request.local_profile_request import (_load_first_exito,
                                                     response_hos,
                                                     purchase_ses,
                                                     load_auth_user,
-                                                    get_username_from_email)
+                                                    get_username_from_email,
+                                                    update_user_profile,
+                                                    load_profile_purchases,
+                                                    get_or_create_user_profile)
 from app.bd_request.hased_password.hased_cookie import verify_accses_token
 
 router = APIRouter(
@@ -21,45 +24,48 @@ router = APIRouter(
 )
 
 
-@router.get("", response_class=HTMLResponse)
-async def profile(requesto: Request, session: AsyncSession = Depends(get_session)):
+async def _get_auth_user_or_redirect(requesto: Request, session: AsyncSession = Depends(get_session)):
     token = requesto.cookies.get("booking_accses_token")
     user_id = verify_accses_token(token)
     if not user_id:
-        return RedirectResponse(url="/regist/", status_code=303)
+        return None
 
     auth_user = await load_auth_user(session, int(user_id))
+
+    return auth_user
+
+@router.get("", response_class=HTMLResponse)
+async def profile(requesto: Request, session: AsyncSession = Depends(get_session)):
+    auth_user = await _get_auth_user_or_redirect(requesto, session)
     if not auth_user:
         return RedirectResponse(url="/regist/", status_code=303)
 
-    
-    users = await _load_first_exito(session, [
-                                        response_hos,
-                                        response_hos,],
-                                    )
-
-    purchases = await _load_first_exito(session,
-                                        [purchase_ses,
-                                         purchase_ses,],
-                                        )
-
-    user = users[0] if users else {
-        "full_name":"Пользователь",
-        "email":"-",
-        "city":"-",
-        "bonus_point":0
-    }
-
-    user["email"] = auth_user["email_us"]
-    user["username"] = get_username_from_email(auth_user["email_us"])
-    user["purchasesAll"] = purchases
+    user = await get_or_create_user_profile(session, auth_user["email_us"])
+    user["purchasesAll"] = await load_profile_purchases(session, user["id"])
 
     return templates.TemplateResponse(
         "profile.html",
         {
             "request": requesto,
-            "profile": user
+            "profile": user,
+            "saved": requesto.query_params.get('saved') == "1",
         }
     )
+
+@router.post("", response_class=HTMLResponse)
+async def update_profile(
+    requesto: Request,
+    full_name: str = Form(""),
+    city: str = Form(""),
+    session: AsyncSession = Depends(get_session),
+):
+    auth_user = await _get_auth_user_or_redirect(requesto, session)
+    if not auth_user:
+        return RedirectResponse(url="/regist/", status_code=303)
+
+    await get_or_create_user_profile(session, auth_user["email_us"])
+    await update_user_profile(session, auth_user["email_us"], full_name, city)
+
+    return RedirectResponse(url="/profile?saved=1", status_code=303)
 
 #@router.get("/api")

@@ -34,11 +34,47 @@
         .points {
             display: inline-block;
             margin-top: 10px;
+            padding: 8px 12px;
             background: rgba(245, 158, 11, .16);
             border-radius: 999px;
             color: var(--accent);
             font-weight: 700;
         }
+        .profile-form {
+            display: grid;
+            gap: 14px;
+            max-width: 560px;
+        }
+        .field { display: grid; gap: 6px; }
+        label { color: var(--muted); font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+        }
+        input:disabled, input[readonly] {
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+        .button {
+            width: fit-content;
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 18px;
+            background: var(--accent);
+            color: #111827;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .success {
+            margin: 0 0 12px;
+            color: #86efac;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -59,9 +95,28 @@
 <body>
     <div class="container">
         <section class="panel">
-            <h1>Private cabinet</h1>
-            <p class="meta">User name: <strong>{{ profile.username }}</strong></p>
-            <p class="meta">Email: <strong>{{ profile.email }}</strong></p>
+            {% if saved %}
+            <p class="success">Profile is saved.</p>
+            {% endif %}
+            <form class="profile-form" method="post" action="/profile">
+                <div class="field">
+                    <label for="full_name">Name</label>
+                    <input id="full_name" name="full_name" value="{{ profile.full_name }}" autocomplete="name" required>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" value="{{ profile.email }}" disabled>
+                </div>
+                <div class="field">
+                    <label for="city">City</label>
+                    <input id="city" name="city" value="{{ profile.city or '' }}" autocomplete="address-level2" placeholder="Take your city.">
+                </div>
+                <div class="field">
+                    <label for="bonus_point">Bonus point</label>
+                    <input id="bonus_point" value="{{ profile.bonus_point or 0 }}" readonly>
+                </div>
+
+            </form>
         </section>
         <section class="panel">
             <h2>История покупок</h2>

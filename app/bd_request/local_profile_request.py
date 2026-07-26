@@ -30,5 +30,82 @@ async def load_auth_user(session: AsyncSession, user_id: int) -> dict | None:
         return None
     return dict(row)
 
+async def load_user_profile(session: AsyncSession, email: str) -> dict | None:
+    response = await session.execute(
+        text(
+            'SELECT id, full_name, email, city, bonus_point '
+            'FROM "UserProfiles" WHERE email = :email'
+        ),
+        {"email": email}
+    )
+
+    row = response.mappings().first()
+    if not row:
+        return None
+    return dict(row)
+
+async def create_user_profile(session: AsyncSession, email: str) -> dict:
+    username = get_username_from_email(email)
+    response = await session.execute(
+        text(
+            'INSERT INTO "UserProfiles" (full_name, email, city, bonus_point) '
+            'VALUES (:full_name, :email, :city, :bonus_point) '
+            'RETURNING id, full_name, email, city, bonus_point'
+        ),
+        {
+            "full_name": username,
+            "email": email,
+            "city": "",
+            "bonus_point": 0,
+        }
+    )
+
+    await session.commit()
+    return dict(response.mappings().one())
+
+async def get_or_create_user_profile(session: AsyncSession, email: str) -> dict:
+    profile = await load_user_profile(session, email)
+    if profile:
+        profile["bonus_point"] = profile.get("bonus_point") or 0
+        profile["city"] = profile.get("city") or ""
+        profile["full_name"] = profile.get("full_name") or get_username_from_email(email)
+        return profile
+    return await create_user_profile(session, email)
+
+async def update_user_profile(session: AsyncSession, email: str, full_name: str, city: str) -> dict:
+    response = await session.execute(
+        text(
+            'UPDATE "UserProfiles" '
+            'SET full_name = :full_name, city = :city '
+            'WHERE email = :email '
+            'RETURNING id, full_name, email, city, bonus_point'
+        ),
+        {
+            "email": email,
+            "full_name": full_name.strip() or get_username_from_email(email),
+            "city": city.strip(),
+        }
+    )
+
+    await session.commit()
+    row = response.mappings().first()
+    if row:
+        profile = dict(row)
+    else:
+        profile = await create_user_profile(session, email)
+    profile["bonus_point"] = profile.get("bonus_point") or 0
+    return profile
+
+async def load_profile_purchases(session: AsyncSession, profile_id: int) -> list[dict]:
+    response = await session.execute(
+        text(
+            'SELECT id, title, quantity, total_price, status, bayitem_at '
+            'FROM "BayProfileItem" WHERE user_id = :profile_id ORDER BY id' 
+        ),
+        {"profile_id": profile_id}
+    )
+    return [dict(row) for row in response.mappings().all()]
+
+
 def get_username_from_email(email: str) -> str:
     return email.split("@", 1)[0]
