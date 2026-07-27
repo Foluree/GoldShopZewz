@@ -143,6 +143,44 @@
             cursor: pointer;
             font-weight: 600;
             margin-top: 8px;
+            transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(127, 157, 255, .25);
+            filter: brightness(1.08);
+        }
+        .btn:active { transform: translateY(1px) scale(.98); }
+        .auth-switch {
+            display: flex;
+            justify-content: flex-end;
+            margin: -2px 0 12px;
+        }
+        .switch-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff7d7;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: .9rem;
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 216, 119, .38);
+            border-radius: 999px;
+            background: 
+                radial-gradient(circle at 20% 25%, rgba(255, 255, 139, .28), transparent 32%),
+                linear-gradient(135deg, rgba(25, 38, 80, .95), rgba(16, 43, 39, .95));
+            box-shadow: 0 8px 22px rgba((80,155,255,.14), inset 0 0 12px rgba(255,229,160,.08));
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18 ease, filter .18s ease
+        }
+        .switch-btn::before { content: "☀️🌙"; font-size: .95rem; }
+        .switch-btn::after { content: "🏗️"; font-size: .95rem; }
+        .switch-btn:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255,229,160,.75);
+            box-shadow: 0 14px 28px rgba(80,155,255,.24), 0 0 18px rgba(255,210,117,.16);
+            filter: brightness(1.08);
         }
         .hint { margin-top: 14px; font-size: .9rem; }
         .world.email .grid { opacity: .8; transform: scale(1); }
@@ -206,6 +244,10 @@
                 <div class="field">
                     <label for="password">Password</label>
                     <input id="password" name="passuse" type="password" placeholder="••••••••" />
+                </div>
+
+                <div class="auth-switch">
+                    <a class="switch-btn" href="/regist/">Create world and accaunt</a>
                 </div>
 
                 <button type="submit" class="btn">Login</button>

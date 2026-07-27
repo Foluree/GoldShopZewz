@@ -182,7 +182,50 @@
             background:linear-gradient(90deg,#4c7dff,#6ab2ff);
             font-weight:600;
             cursor:pointer;
+            transition:transform .18s ease, box-shadow .18s, filter .18s ease;
         }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(127,157,255,.25);
+            filter: brightness(1.08);
+        }
+        .btn:active { transform: translateY(1px) scale(.98); }
+
+        .auth-switch {
+            display: flex;
+            justify-content: flex-end;
+            margin: -2px 0 12px;
+        }
+        .switch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            color: #fff7d7;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,216,129,.4);
+            background: 
+                radial-gradient(circle at 24% 24%, rgba(255,230,155,.28), transparent 34%),
+                linear-gradient(135deg, rgba(22,42,82,.96), rgba(19,62,43,.96));
+            box-shadow: 0 8px 22px rgba(103,160,255,.14), inset 0 0 12px rgba(255,229,160,.08);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
+        }
+        .switch-btn::before { content:"☀️🌙"; }
+        .switch-btn::after { content:"🏗️"; }
+
+        .switch-btn:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255,232,163,.78);
+            box-shadow: 0 14px 28px rgba(103,160,255,.24), 0 0 18px rgba(255,210,117,.16);
+            filter: brightness(1.08);
+        }
+
+        .switch-btn:active { transform: translateY(1px) scale(.97); }
 
         .scene.broken .scene-layer { filter:grayscale(.8) brightness(.35); }
         .scene.broken .scene-status { color:var(--warn); }
@@ -221,6 +264,10 @@
                 <div class="field">
                     <label for="passwordConfirm">Repit password</label>
                     <input id="passwordConfirm" name="passuse_confirm" type="password" minlength="6" placeholder="Repit password" required />
+                </div>
+
+                <div class="auth-switch">
+                    <a class="switch-btn" href="/login/">Already there is world? login</a>
                 </div>
 
                 <button class="btn" type="submit">Create accaunt</button>
