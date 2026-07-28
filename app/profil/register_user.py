@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, HTTPException#, Depends, Response
+from fastapi import APIRouter, Request, Form, HTTPException, Response#, Depends, Response
 from fastapi.responses import HTMLResponse, RedirectResponse 
 from fastapi.templating import Jinja2Templates
 from app.models.model_register import Registro
@@ -31,9 +31,12 @@ async def _create_user(user_data: Registro):
     return await UsersSeo.find_one_finger(email_us=user_data.email_us)
 
 @router.post("/api")
-async def register_use_api(user_data: Registro):
-    await _create_user(user_data)
-    return {"status":"ok"}
+async def register_use_api(result: Response, user_data: Registro):
+    user = await _create_user(user_data)
+    accses_new_tok = create_newst_token({"sub": str(user.id)})
+    result.set_cookie("booking_accses_token", accses_new_tok, httponly=True)
+    return {"status": "ok", "accses_token": accses_new_tok}
+
 
 @router.post("/log", response_class=HTMLResponse)
 async def regist_use_form(
@@ -50,7 +53,6 @@ async def regist_use_form(
         )
     
     try:
-        await _create_user(Registro(email_us=email_us,passuse=passuse))
         user = await _create_user(Registro(email_us=email_us, passuse=passuse))
 
     except HTTPException as e:
@@ -62,7 +64,10 @@ async def regist_use_form(
             )
         
         raise e
-    
-    return RedirectResponse(url="/login/", status_code=303)
+
+    accses_new_tok = create_newst_token({"sub": str(user.id)})
+    response = RedirectResponse(url="/profile", status_code=303)
+    response.set_cookie("booking_accses_token", accses_new_tok, httponly=True)
+    return response
 
  
