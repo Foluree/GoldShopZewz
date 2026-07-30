@@ -209,6 +209,8 @@
             background:linear-gradient(120deg,rgba(62,17,30,.7),rgba(14,16,22,.9));
         }
 
+        .world.error .orb { opacity:.08; transform: scale(.85); }
+
         .page-nav {
             position: fixed;
             top: 22px;
@@ -222,7 +224,7 @@
 
         .page-nav__link {
             min-width: 156px;
-            padding: 12px 15px;
+            padding: 11px 15px;
             border-radius: 14px;
             border: 1px solid rgba(255,255,255,.18);
             color: var(--text);
@@ -233,7 +235,8 @@
             background:
                 radial-gradient(circle at 18% 20%, rgba(103,160,255,.24), transparent 32%)
                 linear-gradient(135deg, rgba(16,24,42,.88), rgba(9,15,29,.74));
-            box-shadow: 0 12px 28px rgba(0,0,0,.26), inset 0 0 14 rgba(255,255,255,.04);
+            box-shadow: 0 12px 28px rgba(0,0,0,.26), inset 0 0 14px rgba(255,255,255,.04);
+            backdrop-filter: blur(10px);
             transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
         }
 
@@ -245,7 +248,6 @@
 
         .page-nav__link:active { transform: translateY(1px) scale(.98); }
 
-        .world.error .orb { opacity:.08; transform: scale(.85); }
         @media (max-width: 900px) {
             .layout { grid-template-columns:1fr; }
             .world { min-height: 44vh; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.08); }
