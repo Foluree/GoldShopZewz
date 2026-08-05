@@ -98,9 +98,3 @@ async def create_order(order: OrderIn, session: AsyncSession = Depends(get_sessi
     }
 
 
-
-
-
-
-
-
