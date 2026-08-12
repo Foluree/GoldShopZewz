@@ -35,7 +35,8 @@ async def create_shop(shop: ShopCreate, session: AsyncSession = Depends(get_sess
     result = await session.execute(
         insert(Shops)
         .values(**shop.model_dump())
-        .returning(Shops.id, Shops.name, Shops.address, Shops.hours, Shops.phone)
+        .returning(Shops.id, Shops.name, Shops.address, Shops.hours, Shops.phone,
+                   Shops.quantity_1g, Shops.quantity_5g, Shops.quantity_10g)
     )
     await session.commit()
     create_shop = result.mappings().one()
