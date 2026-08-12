@@ -76,6 +76,31 @@
     }
     .badge.gold { background: rgba(245,158,11,.16); color: var(--accent2); }
     .offer h3 { font-size: 30px; margin-top: 12px; color: var(--accent2); }
+    .stock-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .stock-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px;
+      background: rgba(255,255,255,.04);
+      text-align: center;
+    }
+    .stock-weight {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .stock-quantity {
+      display: block;
+      color: var(--accent2);
+      font-size: 18p;
+      font-weight: 800;
+    }
     button {
       margin-top: 14px;
       width: 100%;
@@ -122,6 +147,20 @@
         <p>{{ s.address }}</p>
         <p><strong>Часы:</strong> {{ s.hours }}</p>
         <p><strong>Телефон:</strong> {{ s.phone }}</p>
+        <div class="stock-list" aria-label="Count gild in the stors">
+          <div class="stock-item">
+            <span class="stock-weight">1g</span>
+            <span class="stock-quantity">{{ s.quantity_1g }}</span>
+          </div>
+          <div class="stock-item">
+            <span class="stock-weight">5g</span>
+            <span class="stock-quantity">{{ s.quantity_5g }}</span>
+          </div>
+          <div class="stock-item">
+            <span class="stock-weight">10g</span>
+            <span class="stock-quantity">{{ s.quantity_10g }}</span>
+          </div>
+        </div>
       </article>
       {% endfor %}
     </div>
