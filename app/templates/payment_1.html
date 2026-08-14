@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Store with gold - 1g / 5g / 10g</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #111827;
+            --card: #1f2937;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --accent: #f59e0b;
+            --accent2: #fbbf24;
+            --border: rgba(255,255,255,.08);
+            --green: #47d3a6;
+            --red: #f87171;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: radial-gradient(circle at top, #1e293b, var(--bg));
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 32px 16px 56px; }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(245,158,11,.14), rgba(255,255,255,.03));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .hero h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 44px); }
+        .hero p { margin: 0; color: var(--muted); max-width: 720px; line-height: 1.55; }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0 18px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 12px 26px;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            color: var(--muted);
+            background: rgba(255,255,255,.04);
+            transition: transform .18s ease, border-color .18s ease, color .18s ease, background .18s ease, box-shadow .18s ease;
+            user-select: none;
+        }
+        .tab:hover { color: var(--text); border-color: rgba(245,158,11,.5); transform: translateY(-2px); }
+        .tab.active {
+            color: #111827;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-color: transparent;
+            box-shadow: 0 10px 24px rgba(245,158,11,.28);
+        }
+        .tab small { display: block; font-size: 11px; font-weight: 600; opacity: .75; }
+
+        .summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .summary .count { font-weight: 800; color: var(--accent2); font-size: 18px; }
+        .summary .src { font-size: 12px; opacity: .7; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: rgba(17,24,39,.92);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.18);
+            transition: transform .18s ease, border-color .18s ease;
+        }
+        .card:hover { transform: translateY(-3px); border-color: rgba(245,158,11,.35); }
+        .card h3 { margin: 10px 0 10px; font-size: 19px; }
+        .card p { margin: 6px 0; color: var(--muted); line-height: 1.5; font-size: 14px; }
+
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 800;
+            font-size: 15px;
+            background: rgba(245,158,11,.16);
+            color: var(--accent2);
+            margin-top: 4px;
+        }
+        .stock-badge.zero { background: rgba(248,113,113,.12); color: var(--red); }
+
+        .card.none {
+            border-style: dashed;
+            background: rgba(255,255,255,.02);
+            text-align: center;
+            color: var(--muted);
+            padding: 40px 18px;
+        }        
+        .card.none h3 { color: var(--muted); }
+
+        .note { margin-top: 18px; color: var(--muted); font-size: 13px; text-align: center; }
+        .hidden { display: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card { animation: fadeIn .3s ease both; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <h1>Stores with gold</h1>
+            <p>Select weight ingot - sees only those paint, there this weight there is availability (reserve more zero).</p>
+        </section>
+
+        <div class="tabs" id="tabs" role="tablist" aria-label="Select weights gold">
+            <button class="tab active" data-weight="1g" role="tab" aria-selected="true">
+                1g <small>ignot 1 gram</small>
+            </button>
+            <button class="tab" data-weight="5g" role="tab" aria-selected="false">
+                5g <small>ignot 5 gram</small>
+            </button>
+            <button class="tab" data-weight="10g" role="tab" aria-selected="false">
+                10g <small>ignot 10 gram</small>
+            </button>
+        </div>
+
+        <div class="summary">
+            <div>found stors: <span class="count" id="count">0</span></div>
+            <div class="src" id="source">Source data: loading...</div>
+        </div>
+
+        <div class="grid" id="grid"></div>
+        <div class="note">Data: server /api.shops. If fail opens without server - are used demo-data.</div>
+    </div>
+
+    <script>
+        // Демо-данные (такие же, как в External_Added/load_shops_1.py) — на случай открытия без сервера
+        const FALLBACK_SHOPS = [
+            { id: 1,  name: "Санлайт",      address: "ТЦ «Атриум», Земляной Вал, д. 33, Москва",                hours: "10:00–22:00", phone: "+7 495 000-11-01", quantity_1g: 3,  quantity_5g: 5,  quantity_10g: 1  },
+            { id: 2,  name: "Адамас",       address: "ТЦ «Европейский», пл. Киевского Вокзала, д. 2, Москва",    hours: "10:00–22:00", phone: "+7 495 000-11-02", quantity_1g: 2,  quantity_5g: 6,  quantity_10g: 3  },
+            { id: 3,  name: "SOKOLOV",      address: "ГУМ, Красная площадь, д. 3, Москва",                       hours: "10:00–22:00", phone: "+7 495 000-11-03", quantity_1g: 7,  quantity_5g: 6,  quantity_10g: 1  },
+            { id: 4,  name: "585 Золотой",  address: "ТЦ «Охотный Ряд», Манежная площадь, д. 1, Москва",         hours: "10:00–22:00", phone: "+7 495 000-11-04", quantity_1g: 11, quantity_5g: 12, quantity_10g: 56 },
+            { id: 5,  name: "Pandora",      address: "ТЦ «Цветной», Цветной бульвар, д. 15, Москва",             hours: "10:00–22:00", phone: "+7 495 000-11-05", quantity_1g: 6,  quantity_5g: 34, quantity_10g: 5  },
+        ];
+
+        // Три логики: какая колонка отвечает за какой вес
+        const WEIGHTS = {
+            "1g":  { key: "quantity_1g",  label: "1g"  },
+            "5g":  { key: "quantity_5g",  label: "5g"  },
+            "10g": { key: "quantity_10g", label: "10g" },
+        };
+
+        let shops = [];
+        let currentWeight = "1g";
+        
+        const grid = document.getElementById("grid");
+        const countEl = document.getElementById("count");
+        const sourceEl = document.getElementById("source");
+
+        async function loadShops() {
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 4000);
+                const res = await fetch("/api/shops", { signal: controller.signal });
+                clearTimeout(timer);
+                if (!res.ok) throw new Error("HTTP" + res.status);
+                const data = await res.json();
+                shops = Array.isArray(data.shops) ? data.shops : [];
+                if (!shops.length) throw new Error("empty");
+                sourceEl.textContent = "Source data: server /api/shops";
+            } catch (err) {
+                shops = FALLBACK_SHOPS;
+                sourceEl.textContent = "Source data: demp-data (server no found)";
+            }
+            render();
+        }
+        function render() {
+            const w = WEIGHTS[currentWeight];
+            const available = shops.filter(s => Number(s[w.key]) > 0);
+            const total = shops.length;
+
+            countEl.textContent = available.length;
+            grid.innerHTML = "";
+
+            if (!available.length) {
+                const empty = document.createElement("article");
+                empty.className = "card none";
+                empty.innerHTML = "<h3>Not stores</h3><p>Neither one point gold" + currentWeight + "in stock.</p>";
+                grid.appendChild(empty);
+                return;
+            }
+
+            available.sort((a, b) => Number(b[w.key]) - Number(a[w.key]));
+
+            available.forEach((s, i) => {
+                const qty = Number(s[w.key]);
+                const card = document.createElement("article");
+                card.className = "card";
+                card.style.animationDelay = (i * 40) + "ms";
+                card.innerHTML = `
+                    <div class="stock-badge ${qty <= 0 ? "zero" : ""}">${w.label}: ${qty} thing.</div>
+                    <h3>${escapeHtml(s.name || "-")}</h3>
+                    <p>📍 ${escapeHtml(s.address || "-")}</p>
+                    <p>🕐 ${escapeHtml(s.hours || "-")}</p>
+                    <p>📞 ${escapeHtml(s.phone || "-")}</p>
+                `;
+                grid.appendChild(card);
+            });
+
+            const note = document.createElement("p");
+            note.className = "note";
+            note.textContent = "Shown " + available.length + " from " + total + " stores (reverse " + currentWeight + " > 0).";
+            grid.appendChild(note);
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+            }[c]));
+        }
+
+        document.getElementById("tabs").addEventListener("click", (e) => {
+            const btn = e.target.closest(".tab");
+            if (!btn) return;
+            currentWeight = btn.dataset.weight;
+            document.querySelectorAll(".tab").forEach(t => {
+                const active = t === btn;
+                t.classList.toggle("active", active);
+                t.setAttribute("aria-selected", active);
+            });
+            render();
+        });
+
+        loadShops();
+    </script>
+</body>
+</html>

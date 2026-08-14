@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from app.models.shops_model import OrderIn, ShopCreate, OfferCreate
 from app.models.shops1_model import Shops
 from app.models.offers_model import Offers  

@@ -3,7 +3,9 @@ from sqlalchemy import text, select, insert
 from app.bd_and_config.postgres_engine import async_session_pg
 
 async def _fetch_all(session: AsyncSession, table_variants: str) -> list[dict]:
-    return await session.execute(text(f"SELECT * FROM {table_variants} ORDER BY id"))
+    response = await session.execute(text(f"SELECT * FROM {table_variants} ORDER BY id"))
+    rows = response.mappings().all()
+    return [dict(row) for row in rows]
 
 async def _fetch_one(session: AsyncSession, vatinats: str, record_id: int) -> list | None:
     response = await session.execute(

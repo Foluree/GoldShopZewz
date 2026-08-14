@@ -41,11 +41,11 @@ async def seed_shops() -> None:
 
         inserted = 0
         skipped = 0
-        for name, address, hours, phone in SHOPS:
+        for name, address, hours, phone, qty_1g, qty_5g, qty_10g in SHOPS:
             if name in existing:
                 skipped += 1
                 continue
-            session.add(Shops(name=name, address=address, hours=hours, phone=phone))
+            session.add(Shops(name=name, address=address, hours=hours, phone=phone, quantity_1g=qty_1g, quantity_5g=qty_5g, quantity_10g=qty_10g))
             existing.add(name)
             inserted += 1
 

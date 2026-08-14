@@ -1,5 +1,5 @@
 import urllib.error
-from External_Added.additaonal_funtianal_load import fetch_existing_titles, get_base_url, _request
+from additaonal_funtianal_load import fetch_existing_titles, get_base_url, _request
 
 PRICES = [
     ("1г золото", 130.00, "Слиток 999 пробы · 1 г"),
