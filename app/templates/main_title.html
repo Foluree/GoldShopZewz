@@ -101,7 +101,13 @@
       font-size: 18p;
       font-weight: 800;
     }
-    button {
+    .btn-buy {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    button .btn-buy {
       margin-top: 14px;
       width: 100%;
       border: 0;
@@ -112,7 +118,7 @@
       color: #111827;
       cursor: pointer;
     }
-    button:hover { filter: brightness(1.03); }
+    button:hover, .btn-buy { filter: brightness(1.03); }
     .note { margin-top: 18px; color: var(--muted); font-size: 14px; }
   </style>
 </head>
@@ -133,7 +139,11 @@
         <div class="badge gold">{{ o.title }}</div>
         <h3>{{ "%.2f"|format(o.price) }} €</h3>
         <p>{{ o.desc }}</p>
+        {% if o.weight %}
+        <a class="btn-buy" href="/payment/?weight={{ o.weight }}">Buy</a>
+        {% else %}
         <button onclick="buy({{ o.id }})">Купить</button>
+        {% endif %}
       </article>
       {% endfor %}
     </div>

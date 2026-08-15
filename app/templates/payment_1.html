@@ -156,7 +156,7 @@
     </div>
 
     <script>
-        // Демо-данные (такие же, как в External_Added/load_shops_1.py) — на случай открытия без сервера
+
         const FALLBACK_SHOPS = [
             { id: 1,  name: "Санлайт",      address: "ТЦ «Атриум», Земляной Вал, д. 33, Москва",                hours: "10:00–22:00", phone: "+7 495 000-11-01", quantity_1g: 3,  quantity_5g: 5,  quantity_10g: 1  },
             { id: 2,  name: "Адамас",       address: "ТЦ «Европейский», пл. Киевского Вокзала, д. 2, Москва",    hours: "10:00–22:00", phone: "+7 495 000-11-02", quantity_1g: 2,  quantity_5g: 6,  quantity_10g: 3  },
@@ -165,7 +165,6 @@
             { id: 5,  name: "Pandora",      address: "ТЦ «Цветной», Цветной бульвар, д. 15, Москва",             hours: "10:00–22:00", phone: "+7 495 000-11-05", quantity_1g: 6,  quantity_5g: 34, quantity_10g: 5  },
         ];
 
-        // Три логики: какая колонка отвечает за какой вес
         const WEIGHTS = {
             "1g":  { key: "quantity_1g",  label: "1g"  },
             "5g":  { key: "quantity_5g",  label: "5g"  },
@@ -178,6 +177,20 @@
         const grid = document.getElementById("grid");
         const countEl = document.getElementById("count");
         const sourceEl = document.getElementById("source");
+
+        function parseWeightFromUrl() {
+            const w = new URLSearchParams(window.location.search).get("weight");
+            return (w === "1g" || w === "5g" || w === "10g") ? w : null;
+        }
+
+        function activateTab(weight) {
+            currentWeight = weight;
+            document.querySelectorAll(".tab").forEach(t => {
+                const active = t.dataset.weight === weight;
+                t.classList.toggle("active", active);
+                t.setAttribute("aria-selected", active);
+            });
+        }
 
         async function loadShops() {
             try {
@@ -252,6 +265,9 @@
             });
             render();
         });
+
+        const weightFromUrl = parseWeightFromUrl();
+        if (weightFromUrl) activateTab(weightFromUrl);
 
         loadShops();
     </script>
