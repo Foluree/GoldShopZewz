@@ -89,10 +89,28 @@
             padding: 18px;
             box-shadow: 0 10px 30px rgba(0,0,0,.18);
             transition: transform .18s ease, border-color .18s ease;
+            display: flex;
+            flex-direction: column;
         }
         .card:hover { transform: translateY(-3px); border-color: rgba(245,158,11,.35); }
         .card h3 { margin: 10px 0 10px; font-size: 19px; }
         .card p { margin: 6px 0; color: var(--muted); line-height: 1.5; font-size: 14px; }
+
+        .btn-buy {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            margin-top: auto;
+            width: 100%;
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #111827;
+            cursor: pointer;
+        }
+        .btn-buy:hover { filter: brightness(1.06); }
 
         .stock-badge {
             display: inline-flex;
@@ -238,6 +256,7 @@
                     <p>📍 ${escapeHtml(s.address || "-")}</p>
                     <p>🕐 ${escapeHtml(s.hours || "-")}</p>
                     <p>📞 ${escapeHtml(s.phone || "-")}</p>
+                    <a class="btn-buy" href="/payment/?weight=${currentWeight}">Buy</a>
                 `;
                 grid.appendChild(card);
             });
