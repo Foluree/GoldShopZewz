@@ -5,7 +5,7 @@ class OrderIn(BaseModel):
     shop_id: int = Field(..., gt=0)
     quantity: int = Field(1, gt=0)
 
-class BuyIn(BaseModel): 
+class BuyIn(BaseModel):
     weight: str = Field(..., min_length=1, max_length=5)
 
 class OfferCreate(BaseModel):
