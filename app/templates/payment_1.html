@@ -177,6 +177,49 @@
             border-color: rgba(245,158,11,.5);
             background: rgba(245,158,11,.12);
         }
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: min(360px, calc(100vw - 48px));
+            background: linear-gradient(135deg, rgba(71,211,166,.14), rgba(255,255,255,.03));
+            border: 1px solid rgba(71,211,166,.46);
+            border-radius: 16px;
+            padding: 14px 18px;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 18px 46px rgba(0,0,0,.42);
+            animation: toastIn .3s ease both;
+        }
+        .toast .toast-check {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--green), #2dd4a7);
+            color: #06251c;
+            font-size: 16px;
+            font-weight: 900;
+        }
+        .toast.hide {
+            animation: toastOut .3s ease both;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(24px) scale(.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to   { opacity: 0; transform: translateY(24px) scale(.96); }
+        }
         .model-actions {
             display: flex;
             gap: 12px;
@@ -255,6 +298,11 @@
         </div>
     </div>
 
+    <div class="toast hidden" id="buyToast" role="status" aria-live="polite">
+        <span class="toast-check">✓</span>
+        <span>Your are successful bayment</span>
+    </div>
+ 
     <script>
 
         const FALLBACK_SHOPS = [
@@ -374,6 +422,17 @@
         loadShops();
 
         const buyModel = document.getElementById("buyModel")
+        const buyToast = document.getElementById("buyToast")
+
+        let toastTimer = null;
+        function showBuyToast() {
+            buyToast.classList.remove("hidden", "hide");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                buyToast.classList.add("hide");
+                setTimeout(() => buyToast.classList.add("hidden"), 300);
+            }, 3500);
+        }
 
         function openBuyModel() {
             buyModel.classList.remove("hidden");
@@ -420,6 +479,7 @@
                 render();
                 closeBuyModel();
                 currentShop = null;
+                showBuyToast();
             } catch (err) {
                 alert("Buyment failed: " + err);
             } finally {
