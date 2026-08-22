@@ -300,7 +300,7 @@
 
     <div class="toast hidden" id="buyToast" role="status" aria-live="polite">
         <span class="toast-check">✓</span>
-        <span>Your are successful bayment</span>
+        <span id="buyToastText">Your are successful bayment</span>
     </div>
  
     <script>
@@ -425,7 +425,9 @@
         const buyToast = document.getElementById("buyToast")
 
         let toastTimer = null;
-        function showBuyToast() {
+        function showBuyToast(text) {
+            document.getElementById("buyToastText").textContent =
+                text || "Your are successful bayment";
             buyToast.classList.remove("hidden", "hide");
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => {
@@ -479,7 +481,11 @@
                 render();
                 closeBuyModel();
                 currentShop = null;
-                showBuyToast();
+                const paid = data.purchase ? Number(data.purchase.total_price) : null;
+                showBuyToast(
+                    "Successful bayment. Purchase added to your profile" +
+                    (paid != null && !isNaN(paid) ? " (" + paid.toFixed(2) + " €)" : "") + "."
+                );
             } catch (err) {
                 alert("Buyment failed: " + err);
             } finally {

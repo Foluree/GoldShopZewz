@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from app.models.shops_model import OrderIn, ShopCreate, OfferCreate, BuyIn
 from app.models.shops1_model import Shops
@@ -7,6 +7,13 @@ from sqlalchemy import text, insert
 from app.bd_and_config.postgres_engine import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.bd_request.nortal_request import _fetch_all, _fetch_one
+from app.bd_request.hased_password.hased_cookie import verify_accses_token
+from app.bd_request.local_profile_request import (
+    load_auth_user,
+    get_or_create_user_profile,
+    add_profile_purchase,
+)
+from app.main_title_router import _offer_weight
 
 router = APIRouter(
     prefix="/api",
@@ -18,6 +25,14 @@ _WEIGHT_COLUMNS = {
     "5g": "quantity_5g",
     "10g": "quantity_10g",
 }
+
+_FALLBACK_PRICES = {"1g": 130.00, "5g": 650.00, "10g": 1300.00}
+
+def _price_for_weight(offers: list[dict], weight: str) -> float:
+    for offer in offers:
+        if _offer_weight(offer.get("title", "")) == weight:
+            return float(offer.get("price") or 0)
+    return _FALLBACK_PRICES.get(weight, 0.0)
 
 @router.post("/shops", status_code=201)
 async def create_shop(shop: ShopCreate, session: AsyncSession = Depends(get_session)):
@@ -51,7 +66,18 @@ async def get_shops(session: AsyncSession = Depends(get_session)):
 
 
 @router.post("/shops/{shop_id}/buy")
-async def buy_from_shop(shop_id: int, buy: BuyIn, session: AsyncSession = Depends(get_session)):
+async def buy_from_shop(shop_id: int, buy: BuyIn, request: Request, session: AsyncSession = Depends(get_session)):
+    token = request.cookies.get("booking_accses_token")
+    user_id = verify_accses_token(token)
+    if not user_id:
+        return JSONResponse(status_code=401, content={"message": "Required login in the auth"})
+
+    auth_user = await load_auth_user(session, int(user_id))
+    if not auth_user:
+        return JSONResponse(status_code=401, content={"message": "User not found"})
+
+    profile = await get_or_create_user_profile(session, auth_user["email_us"])
+
     column = _WEIGHT_COLUMNS.get(buy.weight)
     if not column:
         return JSONResponse(status_code=400, content={"message": "Неверный вес"})
@@ -63,6 +89,9 @@ async def buy_from_shop(shop_id: int, buy: BuyIn, session: AsyncSession = Depend
     if shop.get(column, 0) <= 0:
         return JSONResponse(status_code=400, content={"message": "Товара нет в наличии"})
 
+    offers = await _fetch_all(session, "offers")
+    price = _price_for_weight(offers, buy.weight)
+
     result = await session.execute(
         text(
             f'UPDATE shops SET {column} = {column} - 1 '
@@ -71,9 +100,23 @@ async def buy_from_shop(shop_id: int, buy: BuyIn, session: AsyncSession = Depend
         ),
         {"shop_id": shop_id},
     )
-    await session.commit()
     quantities = dict(result.mappings().one())
-    return {"shop_id": shop_id, "weight": buy.weight, "quantities": quantities}
+
+    purchase = await add_profile_purchase(
+        session,
+        profile["id"],
+        title=f"Gold ingot {buy.weight} - {shop['name']}",
+        quantity=1,
+        total_price=price,
+    )
+    await session.commit()
+
+    return {
+        "shop_id": shop_id,
+        "weight": buy.weight,
+        "quantities": quantities,
+        "purchase": purchase,
+        }
 
 
 @router.get("/offers")
