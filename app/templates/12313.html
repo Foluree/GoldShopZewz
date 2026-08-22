@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width", initial-scale="1" />
+    <title>Личный кабинет</title>
+    <style>
+        :root  {
+            --bg: #0f172a;
+            --panel: #111827;
+            --card: #1f2937;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --accent: #f59e0b;
+            --border: rgba(255, 255, 255, .08);
+        }
+        * {box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, --apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: radial-gradient(circle at top, #1e293b, var(--bg));
+            color: var(--text);
+        }
+        .container { max-width: 980px; margin: 0 auto; padding: 32px 16px 56px; }
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        h1, h2 { margin: 0 0 14px; }
+        .meta {color: var(--muted); margin: 6px 0;}
+        .points {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(245, 158, 11, .16);
+            border-radius: 999px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .profile-form {
+            display: grid;
+            gap: 14px;
+            max-width: 560px;
+        }
+        .field { display: grid; gap: 6px; }
+        label { color: var(--muted); font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+        }
+        input:disabled, input[readonly] {
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+        .button {
+            width: fit-content;
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 18px;
+            background: var(--accent);
+            color: #111827;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .success {
+            margin: 0 0 12px;
+            color: #86efac;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        th, td {
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            padding: 10px 8px;
+            font-size: 14px;
+        }
+        th { color:var(--muted); font-weight: 600; }
+        tr:last-child td { border-bottom: 0; }
+        .back { color: var(--accent); text-decoration: none; }
+
+        .row-x {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            transition: color .18s ease, border-color .18s ease;
+        }
+        .row-x:hover { color: var(--accent); border-color: var(--accent); }
+
+        .model-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(2, 6, 23, .72);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .model {
+            position: relative;
+            width: min(430px, 92vw);
+            max-height: 86vh;
+            overflow: auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .5);
+        }
+        .model h3 { margin: 0 0 14px; padding-right: 40px; }
+        .model-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            transition: color .18s ease, border-color .18s ease;
+        }
+        .model-close:hover { color: var(--text); border-color: var(--accent); }
+        .hidden { display: none; }
+
+        .model-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .model-btn {
+            flex: 1;
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter .18s ease, border-color .18s ease, color .18s ease;
+        }
+        .model-btn.gold {
+            background: var(--accent);
+            color: #111827;
+        }
+        .model-btn.gold:hover { filter: brightness(1.06); }
+        .model-btn.ghost {
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .model-btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="panel">
+            {% if saved %}
+            <p class="success">Profile is saved.</p>
+            {% endif %}
+            <form class="profile-form" method="post" action="/profile">
+                <div class="field">
+                    <label for="full_name">Name</label>
+                    <input id="full_name" name="full_name" value="{{ profile.full_name }}" autocomplete="name" required>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" value="{{ profile.email }}" disabled>
+                </div>
+                <div class="field">
+                    <label for="city">City</label>
+                    <input id="city" name="city" value="{{ profile.city or '' }}" autocomplete="address-level2" placeholder="Take your city.">
+                </div>
+                <div class="field">
+                    <label for="bonus_point">Bonus point</label>
+                    <input id="bonus_point" value="{{ profile.bonus_point or 0 }}" readonly>
+                </div>
+                <button class="button" type="submit">Save profile</button>
+
+            </form>
+        </section>
+        <section class="panel">
+            <h2>История покупок</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Product</th>
+                        <th>Counts</th>
+                        <th>Sum</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in profile.purchasesAll %}
+                    <tr>
+                        <td>{{ p.bayitem_at }}</td>
+                        <td>{{ p.title }}</td>
+                        <td>{{ p.quantity }}</td>
+                        <td>{{ "%.2f"|format(p.total_price) }} €</td>
+                        <td>{{ p.status }}</td>
+                        <td>
+                            <button class="row-x" type="button" aria-label="Detalis buyment"
+                                data-title="{{ p.title }}"
+                                data-date="{{ p.bayitem_at }}"
+                                data-qty="{{ p.quantity }}"
+                                data-total="{{ '%.2f'|format(p.total_price) }}"
+                                data-status="{{ p.status }}">✕</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <div class="model-overlay hidden" id="itemModel" role="dialog" aira-modal="true" aria-labelledby="itemModelTitle">
+            <div class="model">
+                <button class="model-close" id="itemModelClose" type="button" aria-label="Close">✕</button>
+                <h3 id="itemModelTitle">Product</h3>
+                <table>
+                    <tbody>
+                        <tr><th>Product</th><td id="itemTitle"></td></tr>
+                        <tr><th>Data</th><td id="itemDate"></td></tr>
+                        <tr><th>Counts</th><td id="itemQty"></td></tr>
+                        <tr><th>Sum</th><td id="itemTotal"></td></tr>
+                        <tr><th>Status</th><td id="itemStatus"></td></tr>
+                    </tbody>
+                </table>
+                <div class="model-actions">
+                    <button class="model-btn gold" id="itemModelYes" type="button">Yes, want cancel</button>
+                    <button class="model-btn ghost" id="itemModelNo" type="button">No, no want</button>
+                </div>
+            </div>
+        </div>
+
+        <a class="back" href="/">← На главную</a>
+    </div>
+
+    <script>
+        (function () {
+            var model = document.getElementById("itemModel");
+            if (!model) return;
+
+            function openItemModel(data) {
+                document.getElementById("itemModelTitle").textContent = "Product";
+                document.getElementById("itemTitle").textContent = data.title || "-";
+                document.getElementById("itemDate").textContent = data.date || "-";
+                document.getElementById("itemQty").textContent = data.qty || "-";
+                document.getElementById("itemTotal").textContent =
+                    data.total ? data.total + " €" : "-";
+                document.getElementById("itemStatus").textContent = data.status || "-";
+                model.classList.remove("hidden");
+            }
+
+            function closeItemModel() {
+                model.classList.add("hidden");
+            }
+
+            document.querySelectorAll(".row-x").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    openItemModel(btn.dataset);
+                });
+            });
+
+            document.getElementById("itemModelClose").addEventListener("click", closeItemModel);
+            document.getElementById("itemModelYes").addEventListener("click", closeItemModel);
+            document.getElementById("itemModelNo").addEventListener("click", closeItemModel);
+            model.addEventListener("click", function (e) {
+                if (e.target === model) closeItemModel();
+            });
+        })();
+    </script>
+</body>

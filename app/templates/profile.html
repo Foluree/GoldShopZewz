@@ -143,6 +143,33 @@
         }
         .model-close:hover { color: var(--text); border-color: var(--accent); }
         .hidden { display: none; }
+
+        .model-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .model-btn {
+            flex: 1;
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter .18s ease, border-color .18s ease, color .18s ease;
+        }
+        .model-btn.gold {
+            background: var(--accent);
+            color: #111827;
+        }
+        .model-btn.gold:hover { filter: brightness(1.06); }
+        .model-btn.ghost {
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .model-btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -177,11 +204,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Дата</th>
-                        <th>Товар</th>
-                        <th>Кол-во</th>
-                        <th>Сумма</th>
-                        <th>Статус</th>
+                        <th>Data</th>
+                        <th>Product</th>
+                        <th>Counts</th>
+                        <th>Sum</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -220,6 +247,10 @@
                         <tr><th>Status</th><td id="itemStatus"></td></tr>
                     </tbody>
                 </table>
+                <div class="model-actions">
+                    <button class="model-btn gold" id="itemModelYes" type="button">Yes, want cancel</button>
+                    <button class="model-btn ghost" id="itemModelNo" type="button">No, no want</button>
+                </div>
             </div>
         </div>
 
@@ -253,6 +284,8 @@
             });
 
             document.getElementById("itemModelClose").addEventListener("click", closeItemModel);
+            document.getElementById("itemModelYes").addEventListener("click", closeItemModel);
+            document.getElementById("itemModelNo").addEventListener("click", closeItemModel);
             model.addEventListener("click", function (e) {
                 if (e.target === model) closeItemModel();
             });
