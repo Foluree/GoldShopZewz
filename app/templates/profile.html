@@ -222,6 +222,7 @@
                         <td>{{ p.status }}</td>
                         <td>
                             <button class="row-x" type="button" aria-label="Detalis buyment"
+                                data-id="{{ p.id }}"
                                 data-title="{{ p.title }}"
                                 data-date="{{ p.bayitem_at }}"
                                 data-qty="{{ p.quantity }}"
@@ -262,6 +263,9 @@
             var model = document.getElementById("itemModel");
             if (!model) return;
 
+            var currentRow = null;
+            var yesBtn = document.getElementById("itemModelYes");
+
             function openItemModel(data) {
                 document.getElementById("itemModelTitle").textContent = "Product";
                 document.getElementById("itemTitle").textContent = data.title || "-";
@@ -279,13 +283,38 @@
 
             document.querySelectorAll(".row-x").forEach(function (btn) {
                 btn.addEventListener("click", function () {
+                    currentRow = btn.closest("tr");
                     openItemModel(btn.dataset);
                 });
             });
 
             document.getElementById("itemModelClose").addEventListener("click", closeItemModel);
-            document.getElementById("itemModelYes").addEventListener("click", closeItemModel);
             document.getElementById("itemModelNo").addEventListener("click", closeItemModel);
+
+            yesBtn.addEventListener("click", function () {
+                var purchaseId = currentRow
+                    ? currentRow.querySelector(".row-x").dataset.id
+                    : null;
+                if (!purchaseId) {
+                    closeItemModel();
+                    return;
+                }
+
+                yesBtn.disabled = true;
+                fetch("/profile/purchases/" + purchaseId, { method: "DELETE" })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error("HTTP " + response.status);
+                        if (currentRow) currentRow.remove();
+                        closeItemModel();
+                    })
+                    .catch(function () {
+                        alert("No managed close bayment. Please repeat again.")
+                    })
+                    .finally(function () {
+                        yesBtn.disabled = false;
+                    });
+            });
+
             model.addEventListener("click", function (e) {
                 if (e.target === model) closeItemModel();
             });

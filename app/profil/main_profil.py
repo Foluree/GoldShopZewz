@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends, Form
 #from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse#, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from app.main_title_router import templates
 #from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,8 @@ from app.bd_request.local_profile_request import (_load_first_exito,
                                                     get_username_from_email,
                                                     update_user_profile,
                                                     load_profile_purchases,
-                                                    get_or_create_user_profile)
+                                                    get_or_create_user_profile,
+                                                    delete_profile_purchase)
 from app.bd_request.hased_password.hased_cookie import verify_accses_token
 
 router = APIRouter(
@@ -68,4 +69,19 @@ async def update_profile(
 
     return RedirectResponse(url="/profile?saved=1", status_code=303)
 
-#@router.get("/api")
+@router.delete("/purchases/{purchase_id}")
+async def cancel_purchase(
+    purchase_id: int,
+    requesto: Request,
+    session: AsyncSession = Depends(get_session),
+):
+    auth_user = await _get_auth_user_or_redirect(requesto, session)
+    if not auth_user:
+        return JSONResponse({"detail": "not authenticated"}, status_code=401)
+
+    user = await get_or_create_user_profile(session, auth_user["email_us"])
+    deleted = await delete_profile_purchase(session, user["id"], purchase_id)
+    if not deleted:
+        return JSONResponse({"detail": "purchase not found"}, status_code=404)
+
+    return JSONResponse({"deleted": True})

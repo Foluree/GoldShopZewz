@@ -103,7 +103,7 @@ async def add_profile_purchase(
         quantity: int,
         total_price: float,
         status: str = "Куплено",
-) -> dict:
+) -> dict: 
     response = await session.execute(
         text(
             'INSERT INTO "BayProfileItem" (title, quantity, total_price, status, bayitem_at, user_id) '
@@ -129,6 +129,21 @@ async def load_profile_purchases(session: AsyncSession, profile_id: int) -> list
         {"profile_id": profile_id}
     )
     return [dict(row) for row in response.mappings().all()]
+
+async def delete_profile_purchase(session: AsyncSession, profile_id: int, purchase_id: int) -> bool:
+    response = await session.execute(
+        text(
+        'DELETE FROM "BayProfileItem" '
+        'WHERE id = :purchase_id AND user_id = :profile_id'
+        ),
+        {
+            "purchase_id": purchase_id,
+            "profile_id": profile_id,
+        }
+    )
+
+    await session.commit()
+    return response.rowcount > 0
 
 
 def get_username_from_email(email: str) -> str:
