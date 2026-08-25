@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.main_title_router import router as router_main_lob
 from app.profil.main_profil import router as router_profile
 from app.profil.logins_user import router as router_login
@@ -18,6 +20,12 @@ async def lifespan(app: FastAPI):
 
     
 app = FastAPI(title="Gold Shop", lifespan=lifespan)
+
+app.mount(
+    "/static",
+    StaticFiles(directory=str(Path(__file__).resolve().parent / "app" / "tamplates_css")),
+    name="static",
+)
 
 app.include_router(router_api_temporaly)
 app.include_router(router_payment)

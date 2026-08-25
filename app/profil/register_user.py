@@ -5,13 +5,17 @@ from app.models.model_register import Registro
 from app.models.model_user.users_seo import UsersSeo
 from app.bd_request.hased_password.hased_cookie import get_cookie_password, create_newst_token
 from app.bd_and_config.error_bs.main_error import UserAllNoneExit
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent     
+TEMPLATES_DIR = BASE_DIR.parent / "templates"
 
 router = APIRouter(
     prefix="/regist",
     tags=["Registor User"]
 )
 
-templating = Jinja2Templates(directory="app/templates")
+templating = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 @router.get("/", response_class=HTMLResponse)
 async def regist_html(request: Request):

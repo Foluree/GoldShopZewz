@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -6,11 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.bd_request.nortal_request import _fetch_all
 from re import search
 
+BASE_DIR = Path(__file__).resolve().parent
+
 router = APIRouter( 
     prefix="",
     tags=["main lobby"]
 )
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 _WEIGHT_BY_GAMES = {"1":"1g", "5":"5g", "10":"10g"}
 
