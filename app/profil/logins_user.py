@@ -4,13 +4,14 @@ from fastapi.templating import Jinja2Templates
 from app.models.model_register import Registro
 from app.bd_and_config.error_bs.main_error import NoneCorrectEmailOrPassword
 from app.bd_request.hased_password.hased_cookie import autotification_user, create_newst_token
+from pathlib import Path
 
 router = APIRouter(
     prefix="/login",
     tags=["login user"]
 )
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
 @router.get("/", response_class=HTMLResponse)
 async def home(request: Request):

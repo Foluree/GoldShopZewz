@@ -24,7 +24,6 @@ router = APIRouter(
     tags=["profile"]
 )
 
-
 async def _get_auth_user_or_redirect(requesto: Request, session: AsyncSession = Depends(get_session)):
     token = requesto.cookies.get("booking_accses_token")
     user_id = verify_accses_token(token)

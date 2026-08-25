@@ -1,387 +1,177 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Split Reality - Register</title>
-    <style>
-        :root {
-            --bg: #070b14;
-            --panel: #10182a;
-            --line: rgba(255,255,255,.15);
-            --text: #e7ebf3;
-            --muted: #93a1c4;
-            --ok: #8de2a8;
-            --warn: #ff7f7f;
-            --accent: #67a0ff;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-            color: var(--text);
-            background: radial-gradient(circle at 20% 20%, #172744 0%, var(--bg) 45%);
-        }
-
-        .split {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            min-height: 100vh;
-        }
-
-        .scene {
-            position: relative;
-            overflow: hidden;
-            border-right: 1px solid var(--line);
-            background: linear-gradient(180deg, #0f1a30 0%, #060912 100%)
-        }
-
-        .scene-layer {
-            position: absolute;
-            inset: 0;
-            transition: opacity .55s ease, transform .8s ease, filter .6s ease;
-        }
-
-        .day-night {
-            background:
-                radial-gradient(circle at 70% 30%, rgba(255,227,139,.55) 0%, transparent 40%),
-                radial-gradient(circle at 22% 20%, rgba(163,191,255,.5) 0%, transparent 35%),
-                linear-gradient(180deg,#0b1530 0%,#111f44 40%, #233f77 100%);
-            opacity:.35;
-        }
-
-        .firmament {
-            background:
-                radial-gradient(140% 60% at 50% 78%, rgba(57,132,255,.34), transparent 70%),
-                radial-gradient(95% 95% at 50% 110%, rgba(170,220,255,.24), transparent 70%);
-            transform: translateY(22px) scale(.97);
-            opacity: 0;
-        }
-
-        .land {
-            background:
-                radial-gradient(55% 28% at 50% 88% ,rgba(85,183,104,.46),transparent 70%),
-                radial-gradient(52% 52% at 50% 102%, rgba(102,141,86,.44),transparent 70%);
-            transform: translateY(28px) scale(.95);
-            opacity:0;
-        }
-
-        .humans {
-            position:absolute;
-            left:50%;
-            bottom:9%;
-            width:92px;
-            height:92px;
-            transform:translateX(-50%) scale(.82);
-            opacity:0;
-            transition:all .55s ease;
-        }
-
-        .humans::before,
-        .humans::after {
-            content: "";
-            position:absolute;
-            bottom:0;
-            width:30px;
-            height:62px;
-            border-radius:18px 18px 8px 8px;
-            background: linear-gradient(180deg,#f2dfd7,#b59387);
-            box-shadow: 0 0 18px rgba(255,230,206,.25);
-        }
-
-        .humans::before { left:12px; }
-        .humans::after { right:12px; }
-
-        .scene-status {
-            position:absolute;
-            left:24px;
-            bottom:22px;
-            font-size:14px;
-            color:var(--muted);
-            background:rgba(0,0,0,.3);
-            border:1px solid var(--line);
-            border-radius:12px;
-            padding:10px 14px;
-        }
-
-        .page-nav {
-            position: fixed;
-            top: 22px;
-            right: 22px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .page-nav__link {
-            min-width: 156px;
-            padding: 11px 15px;
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,.18);
-            color: var(--text);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: .01em;
-            background:
-                radial-gradient(circle at 18% 20%, rgba(103,160,255,.24), transparent 32%)
-                linear-gradient(135deg, rgba(16,24,42,.88), rgba(9,15,29,.74));
-            box-shadow: 0 12px 28px rgba(0,0,0,.26), inset 0 0 14px rgba(255,255,255,.04);
-            backdrop-filter: blur(10px);
-            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
-        }
-
-        .page-nav__link:hover {
-            transform: translateY(-2px);
-            border-radius: rgba(103,160,255,.62);
-            box-shadow: 0 16px 30px rgba(103,160,255,.18), 0 10px 24px rgba(0,0,0,.28);
-            filter: brightness(1.08);
-        }
-
-        .page-nav__link:active { transform: translateY(1px) scale(.98); }
-
-        .form-side {
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            padding:36px;
-            background:#090f1d;
-        }
-
-        .card {
-            width:100%;
-            max-width:430px;
-            padding:28px;
-            border-radius:18px;
-            background:var(--panel);
-            border:1px solid var(--line);
-            box-shadow:0 18px 35px rgba(0,0,0,.35);
-        }
-
-        h1 {
-            margin: 0 0 8px;
-            font-size:30px;
-            line-height:1.1;
-        }
-
-        .field { margin-bottom: 14px; }
-
-        .subtitle {
-            margin:0 0 20px;
-            color:var(--muted);
-            font-size:14px;
-        }
-
-        label {
-            display:block;
-            margin-bottom:6px;
-            font-size:13px;
-            color:#c7d2f2;
-        }
-
-        input {
-            width:100%;
-            border:1px solid rgba(255,255,255,.15);
-            background:rgba(9,15,29,.8);
-            color:var(--text);
-            border-radius:12px;
-            padding:12px 13px;
-            font-size:15px;
-            outline:none;
-            transition:border-color .2s ease, box-shadow .2s ease;
-        }
-
-        input:focus {
-            border-color:var(--accent);
-            box-shadow:0 0 0 3px rgba(103,160,255,.2);
-        }
-
-        .help {
-            margin-top:10px;
-            min-height:20px;
-            color:var(--muted);
-            font-size:13px;
-        }
-
-        .help.error { color: var(--warn); }
-
-        .btn {
-            width:100%;
-            margin-top:8px;
-            border:none;
-            border-radius:12px;
-            padding:12px;
-            color:white;
-            background:linear-gradient(90deg,#4c7dff,#6ab2ff);
-            font-weight:600;
-            cursor:pointer;
-            transition:transform .18s ease, box-shadow .18s, filter .18s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(127,157,255,.25);
-            filter: brightness(1.08);
-        }
-        .btn:active { transform: translateY(1px) scale(.98); }
-
-        .auth-switch {
-            display: flex;
-            justify-content: flex-end;
-            margin: -2px 0 12px;
-        }
-        .switch-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            color: #fff7d7;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            padding: 10px 14px;
-            border: 1px solid rgba(255,216,129,.4);
-            background: 
-                radial-gradient(circle at 24% 24%, rgba(255,230,155,.28), transparent 34%),
-                linear-gradient(135deg, rgba(22,42,82,.96), rgba(19,62,43,.96));
-            box-shadow: 0 8px 22px rgba(103,160,255,.14), inset 0 0 12px rgba(255,229,160,.08);
-            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
-        }
-        .switch-btn::before { content:"☀️🌙"; }
-        .switch-btn::after { content:"🏗️"; }
-
-        .switch-btn:hover {
-            transform: translateY(-3px);
-            border-color: rgba(255,232,163,.78);
-            box-shadow: 0 14px 28px rgba(103,160,255,.24), 0 0 18px rgba(255,210,117,.16);
-            filter: brightness(1.08);
-        }
-
-        .switch-btn:active { transform: translateY(1px) scale(.97); }
-
-        .scene.broken .scene-layer { filter:grayscale(.8) brightness(.35); }
-        .scene.broken .scene-status { color:var(--warn); }
-
-        @media (max-width:900px) {
-            .split { grid-template-columns:1fr; }
-            .scene { min-height:42vh;border-right:none;border-bottom:1px solid var(--line); }
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="/static/profile.css"/>
 </head>
 <body>
-    <nav class="page-nav" aria-label="Navigation Registr">
-        <a class="page-nav__link" href="/">←At home</a>
-        <a class="page-nav__link" href="/profile">👤 In the profile</a>
-    </nav>
-
-    <main class="split">
-        <section class="scene" id="scene">
-            <div class="scene-layer day-night" id="dayNight"></div>
-            <div class="scene-layer firmament" id="firmament"></div>
-            <div class="scene-layer land" id="land"></div>
-            <div class="humans" id="humans"></div>
-            <p class="scene-status" id="sceneStatus">1 day:Light and dark.</p>
-        </section>
-
-        <section class="form-side">
-            <form class="card" id="registerForm" action="/regist/log" method="post" novalidate>
-                <h1>Split Reality</h1>
-                <p class="subtitle">Регистация: визуал «Бытия» реагирует на ваши данные.</p>
-
+    <div class="container">
+        <section class="panel">
+            {% if saved %}
+            <p class="success">Profile is saved.</p>
+            {% endif %}
+            <form class="profile-form" method="post" action="/profile">
+                <div class="field">
+                    <label for="full_name">Name</label>
+                    <input id="full_name" name="full_name" value="{{ profile.full_name }}" autocomplete="name" required>
+                </div>
                 <div class="field">
                     <label for="email">Email</label>
-                    <input id="email" name="email_us" type="email" autocomplete="email" placeholder="name@example.com" required />
+                    <input id="email" value="{{ profile.email }}" disabled>
                 </div>
-
                 <div class="field">
-                    <label for="password">Password</label>
-                    <input id="password" name="passuse" type="password" minlength="6" placeholder="Minimun 6 characters" required />
+                    <label for="city">City</label>
+                    <input id="city" name="city" value="{{ profile.city or '' }}" autocomplete="address-level2" placeholder="Take your city.">
                 </div>
-
                 <div class="field">
-                    <label for="passwordConfirm">Repit password</label>
-                    <input id="passwordConfirm" name="passuse_confirm" type="password" minlength="6" placeholder="Repit password" required />
+                    <label for="bonus_point">Bonus point</label>
+                    <input id="bonus_point" value="{{ profile.bonus_point or 0 }}" readonly>
                 </div>
+                <button class="button" type="submit">Save profile</button>
 
-                <div class="auth-switch">
-                    <a class="switch-btn" href="/login/">Already there is world? login</a>
-                </div>
-
-                <button class="btn" type="submit">Create accaunt</button>
-                <div class="help{% if error_message %} error{% endif %}" id="help">
-                    {% if error_message %}{{ error_message }}{% else %}Fill in fields, to world get ready ty stages.{% endif %}
-                </div>
             </form>
         </section>
-    </main>
-            
+        <section class="panel">
+            <h2>История покупок</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Product</th>
+                        <th>Counts</th>
+                        <th>Sum</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in profile.purchasesAll %}
+                    <tr>
+                        <td>{{ p.bayitem_at }}</td>
+                        <td>{{ p.title }}</td>
+                        <td>{{ p.quantity }}</td>
+                        <td>{{ "%.2f"|format(p.total_price) }} €</td>
+                        <td>{{ p.status }}</td>
+                        <td>
+                            <button class="row-x" type="button" aria-label="Detalis buyment"
+                                data-id="{{ p.id }}"
+                                data-title="{{ p.title }}"
+                                data-date="{{ p.bayitem_at }}"
+                                data-qty="{{ p.quantity }}"
+                                data-total="{{ '%.2f'|format(p.total_price) }}"
+                                data-status="{{ p.status }}">✕</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <div class="model-overlay hidden" id="itemModel" role="dialog" aria-modal="true" aria-labelledby="itemModelTitle">
+            <div class="model">
+                <button class="model-close" id="itemModelClose" type="button" aria-label="Close">✕</button>
+                <h3 id="itemModelTitle">Product</h3>
+                <table>
+                    <tbody>
+                        <tr><th>Product</th><td id="itemTitle"></td></tr>
+                        <tr><th>Data</th><td id="itemDate"></td></tr>
+                        <tr><th>Counts</th><td id="itemQty"></td></tr>
+                        <tr><th>Sum</th><td id="itemTotal"></td></tr>
+                        <tr><th>Status</th><td id="itemStatus"></td></tr>
+                    </tbody>
+                </table>
+                <div class="model-actions">
+                    <button class="model-btn gold" id="itemModelYes" type="button">Yes, want cancel</button>
+                    <button class="model-btn ghost" id="itemModelNo" type="button">No, no want</button>
+                </div>
+            </div>
+        </div>
+
+        <a class="back" href="/">← На главную</a>
+    </div>
+
+    <div class="toast hidden" id="cancelToast" role="status" aria-live="polite">
+        <span class="toast-check">✓</span>
+        <span id="cancelToastText">Grate buyment canceled</span>
+    </div>
+
     <script>
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const passwordConfirm = document.getElementById('passwordConfirm');
-        const scene = document.getElementById('scene');
-        const dayNight = document.getElementById('dayNight');
-        const firmament = document.getElementById('firmament');
-        const land = document.getElementById('land');
-        const humans = document.getElementById('humans');
-        const status = document.getElementById('sceneStatus');
-        const help = document.getElementById('help');
-        const form = document.getElementById('registerForm');
+        (function () {
+            var model = document.getElementById("itemModel");
+            if (!model) return;
 
-        function updateScene() {
-            const hasEmail = email.value.trim().length > 3;
-            const hasPassword = password.value.length >= 6;
-            const passwordsMatch = password.value && password.value === passwordConfirm.value;
+            var currentRow = null;
+            var yesBtn = document.getElementById("itemModelYes");
 
-            scene.classList.remove('broken');
-            help.classList.remove('error');
+            var toast = document.getElementById("cancelToast");
+            var toastTimer = null;
 
-            dayNight.style.opacity = hasEmail ? '0.95' : '0.35';
-            firmament.style.opacity = hasEmail ? "0.9":"0";
-            firmament.style.transform = hasEmail ? 'translateY(0) scale(1)' : 'translateY(22px) scale(.97)';
-
-            land.style.opacity = hasPassword ? '0.95' : '0';
-            land.style.transform = hasPassword ? 'translateY(0) scale(1)':'translateY(28px) scale(.95)';
-
-            humans.style.opacity = passwordsMatch ? '0.95':'0';
-            humans.style.transform = passwordsMatch ? 'translateX(-50%) scale(1)':'translateX(-50%) scale(.82)';
-
-            if (!hasEmail) {
-                status.textContent = '1 day: light and dark.'
-            } else if (!hasPassword) {
-                status.textContent =  '2 day: Water separation, appers firmament.'
-            } else if (!passwordsMatch && passwordConfirm.value.length > 0) {
-                status.textContent = 'Error: structure collapse - password no coincide.';
-                scene.classList.add('broken');
-                help.textContent = 'Password no coincide.';
-                help.classList.add('error');
-            } else if (passwordsMatch) {
-                status.textContent = '3 day: eart, life and humans appeared.';
-                help.textContent = 'Form ready to seding.'
-            } else {
-                status.textContent = '3 day: forming eart.'
+            function showCancelToast(text) {
+                document.getElementById("cancelToastText").textContent =
+                    text || "Buyment is accsesful cancel";
+                toast.classList.remove("hidden", "hide"); 
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function () {
+                    toast.classList.add("hide");
+                    setTimeout(function () { toast.classList.add("hidden"); }, 300);
+                }, 3500);
             }
-        }
 
-        [email,password,passwordConfirm].forEach(el => el.addEventListener('input',updateScene));
-
-        form.addEventListener('submit',(event) => {
-            updateScene();
-            const valid = email.checkValidity() && password.checkValidity() && password.value === passwordConfirm.value;
-            if (!valid) {
-                event.preventDefault();
-                scene.classList.add('broken');
-                status.textContent = "Error: data no full or no faithful.";
-                help.textContent = "Check email and coincidence password."
-                help.classList.add('error')
+            function openItemModel(data) {
+                document.getElementById("itemModelTitle").textContent = "Product";
+                document.getElementById("itemTitle").textContent = data.title || "-";
+                document.getElementById("itemDate").textContent = data.date || "-";
+                document.getElementById("itemQty").textContent = data.qty || "-";
+                document.getElementById("itemTotal").textContent =
+                    data.total ? data.total + " €" : "-";
+                document.getElementById("itemStatus").textContent = data.status || "-";
+                model.classList.remove("hidden");
             }
-        });
+
+            function closeItemModel() {
+                model.classList.add("hidden");
+            }
+
+            document.querySelectorAll(".row-x").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    currentRow = btn.closest("tr");
+                    openItemModel(btn.dataset);
+                });
+            });
+
+            document.getElementById("itemModelClose").addEventListener("click", closeItemModel);
+            document.getElementById("itemModelNo").addEventListener("click", closeItemModel);
+
+            yesBtn.addEventListener("click", function () {
+                var purchaseId = currentRow
+                    ? currentRow.querySelector(".row-x").dataset.id
+                    : null;
+                if (!purchaseId) {
+                    closeItemModel();
+                    return;
+                }
+
+                yesBtn.disabled = true;
+                fetch("/profile/purchases/" + purchaseId, { method: "DELETE" })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error("HTTP " + response.status);
+                        if (currentRow) currentRow.remove();
+                        closeItemModel();
+                        showCancelToast();
+                    })
+                    .catch(function () {
+                        alert("No managed close bayment. Please repeat again.")
+                    })
+                    .finally(function () {
+                        yesBtn.disabled = false;
+                    });
+            });
+
+            model.addEventListener("click", function (e) {
+                if (e.target === model) closeItemModel();
+            });
+        })();
     </script>
 </body>
-</html>

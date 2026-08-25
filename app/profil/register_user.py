@@ -7,8 +7,7 @@ from app.bd_request.hased_password.hased_cookie import get_cookie_password, crea
 from app.bd_and_config.error_bs.main_error import UserAllNoneExit
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent     
-TEMPLATES_DIR = BASE_DIR.parent / "templates"
+TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
 
 router = APIRouter(
     prefix="/regist",

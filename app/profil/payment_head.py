@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.bd_and_config.postgres_engine import get_session
 from app.bd_request.local_profile_request import load_auth_user
 from app.bd_request.hased_password.hased_cookie import verify_accses_token
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent / "templates"
 
 router = APIRouter(
     prefix="/payment",
@@ -21,4 +24,4 @@ async def payment_page(request: Request, session: AsyncSession = Depends(get_ses
     if not auth_user:
         return RedirectResponse(url="/regist/", status_code=303)
     
-    return FileResponse("app/templates/payment_1.html")
+    return FileResponse(BASE_DIR / "payment_1.html")
