@@ -7,6 +7,24 @@
     <link rel="stylesheet" href="/static/profile.css"/>
 </head>
 <body>
+    <div class="hamburger" id="hamburgerBtn" aira-label="Menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar" aria-label="Navigation">
+        <a class="sidebar-item" href="/">
+            <span class="sidebar-icon">🏠</span>
+            <span class="sidebar-label">Main</span>
+        </a>
+        <a class="sidebar-item" href="/payment">
+            <span class="sidebar-icon">🪙</span>
+            <span class="sidebar-label">Payment</span>
+        </a>
+    </nav>
     <div class="container">
         <section class="panel">
             {% if saved %}
@@ -99,6 +117,28 @@
 
     <script>
         (function () {
+
+            var hamburger = document.getElementById("hamburgerBtn");
+            var sidebar = document.getElementById("sidebar");
+            var overlay = document.getElementById("sidebarOverlay");
+
+            function openSidebar() {
+                sidebar.classList.add("open");
+                overlay.classList.add("open");
+                hamburger.classList.add("open");
+                hamburger.setAttribute("aria-expanded", "true");
+            }
+            function closeSidebar() {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("open");
+                hamburger.classList.remove("open");
+                hamburger.setAttribute("aria-expanded", "false");
+            }
+            hamburger.addEventListener("click", function() {
+                sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+            });
+            overlay.addEventListener("click", closeSidebar);
+
             var model = document.getElementById("itemModel");
             if (!model) return;
 

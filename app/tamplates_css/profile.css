@@ -209,3 +209,103 @@ tr:last-child td { border-bottom: 0; }
     to   { opacity: 0; transform: translateY(24px) scale(.96); }
 }
 .toast.hidden { display: none; }
+
+.hamburger {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 310;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: border-color .25s ease, background .25s ease;
+}
+.hamburger:hover {
+    border-color: var(--accent);
+    background: var(--card);
+}
+.hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform .3s ease, opacity .3s ease;
+}
+
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 290;
+    background: rgba(2,6,23,.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s ease;
+}
+.sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 300;
+    width: 220px;
+    height: 100vh;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 72px 0 32px;
+    transform: translateX(-100%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    box-shadow: 8px 0 30px rgba(0,0,0,.35);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 0;
+    transition: background .2s ease, color .2s ease;
+}
+.sidebar-item:hover {
+    background: rgba(245,158,11,.12);
+    color: var(--accent);
+}
+.sidebar-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 18px;
+    flex-shrink: 0;
+}

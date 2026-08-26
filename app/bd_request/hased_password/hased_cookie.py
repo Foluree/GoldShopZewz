@@ -4,6 +4,10 @@ from pydantic import EmailStr
 from app.models.model_user.users_seo import UsersSeo
 from datetime import timedelta, datetime
 from jose import jwt, JWTError
+from fastapi import Request, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.bd_request.local_profile_request import load_auth_user
+from app.bd_and_config.postgres_engine import get_session
 
 cmd_txt = CryptContext(schemes="bcrypt", deprecated="auto")
 
@@ -43,3 +47,13 @@ def verify_accses_token(token: str | None) -> str | None:
         return None
 
     return payload.get("sub")
+
+async def _get_auth_user_or_redirect(requesto: Request, session: AsyncSession = Depends(get_session)):
+    token = requesto.cookies.get("booking_accses_token")
+    user_id = verify_accses_token(token)
+    if not user_id:
+        return None
+
+    auth_user = await load_auth_user(session, int(user_id))
+
+    return auth_user
