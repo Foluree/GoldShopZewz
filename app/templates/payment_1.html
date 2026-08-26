@@ -5,8 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Store with gold - 1g / 5g / 10g</title>
     <link rel="stylesheet" href="/static/payment_1.css"/>
+    <link rel="stylesheet" href="/static/profile.css"/>
 </head>
 <body>
+    <div class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar" aria-label="Navigation">
+        <a class="sidebar-item" href="/">
+            <span class="sidebar-icon">🏠</span>
+            <span class="sidebar-label">Main</span>
+        </a>
+        <a class="sidebar-item" href="/payment">
+            <span class="sidebar-icon">🪙</span>
+            <span class="sidebar-label">Payment</span>
+        </a>
+        <a class="sidebar-item" href="/profile">
+            <span class="sidebar-icon">👤</span>
+            <span class="sidebar-label">Profile</span>
+        </a>
+    </nav>
+
     <div class="container">
         <section class="hero">
             <h1>Stores with gold</h1>
@@ -52,6 +75,27 @@
     </div>
  
     <script>
+        (function () {
+            var hamburger = document.getElementById("hamburgerBtn");
+            var sidebar = document.getElementById("sidebar");
+            var overlay = document.getElementById("sidebarOverlay");
+        
+            function openSidebar() {
+                sidebar.classList.add("open");
+                overlay.classList.add("open");
+                hamburger.classList.add("aria-expanded", "true");
+            }
+            function closeSidebar() {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("open");
+                hamburger.classList.remove("open");
+                hamburger.setAttribute("aria-expanded", "false");
+            }
+
+            hamburger.addEventListener("click", function() {
+                sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+            });
+        })();
 
         const FALLBACK_SHOPS = [
             { id: 1,  name: "Санлайт",      address: "ТЦ «Атриум», Земляной Вал, д. 33, Москва",                hours: "10:00–22:00", phone: "+7 495 000-11-01", quantity_1g: 3,  quantity_5g: 5,  quantity_10g: 1  },
