@@ -44,7 +44,7 @@ async def profile(requesto: Request, session: AsyncSession = Depends(get_session
     user["purchasesAll"] = await load_profile_purchases(session, user["id"])
 
     return templates.TemplateResponse(
-        "12313.html",
+        "profile.html",
         {
             "request": requesto,
             "profile": user,
