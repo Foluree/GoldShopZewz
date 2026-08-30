@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request with Olympys</title>
+<link rel="stylesheet" href="/static/feedback.css">
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="particles" id="particles"></div>
+
+<div class="olympus-page">
+
+    <div class="title-block">
+        <h1>𝘖𝘓𝘺𝘮𝘱𝘶𝘴</h1>
+        <div class="subtitle">Request to gods</div>
+        <div class="divider"></div>
+    </div>
+
+    <div class="emblems">
+        <div class="emblem-btn" id="btn-mountain" onclick="showMountain()" title="Mountain Olympys">
+            ⛰️
+            <span class="emblem-label">Olympys</span>
+        </div>
+        <div class="emblem-btn" id="btn-temple" onclick="showTemple()" title="Temple gods">
+            🏛️
+            <span class="emblem-label">Temple</span>
+        </div>
+        <div class="emblem-btn" id="btn-gods" onclick="showGods()" title="Gods Olympys">
+            ⚡
+            <span class="emblem-label">Gods</span>
+        </div>
+    </div>
+
+    <div class="scene" id="scene">
+
+        <div class="mountain" id="mountain">
+            <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="mtnGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#c9a84c" stop-opacity=".3"/>
+                        <stop offset="40%" stop-color="#3a3020"/>
+                        <stop offset="100%" stop-color="#1a1510"/>
+                    </linearGradient>
+                    <linearGradient id="snowGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#f5e6a3" stop-opacity=".9"/>
+                        <stop offset="100%" stop-color="#c9a84c" stop-opacity=".3"/>
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+
+                <polygon points="260,30 50,310 470,310" fill="url(#mtnGrad)" stroke="#c9a84c33" stroke-width="1"/>
+                <polygon points="260,30 80,310 200,310 260,120" fill="#1e1a12" opacity=".6"/>
+                <polygon points="260,30 320, 310 440, 310 260, 120" fill="#252015" opacity=".4"/>
+                <polygon points="260, 30 230, 90 290,90" fill="url(#snowGrad)" filter="url(#glow)"/>
+                <line x1="200" y1="180" x2="160" y2="290" stroke="#c9a84c22" stroke-width="1"/>
+                <line x1="310" y1="160" x2="350" y2="290" stroke="#c9a84c18" stroke-width="1"/>
+                <circle cx="260" cy="40" r="30" fill="#c9a84c" opacity=".08" filter="url(#glow)"/> 
+            </svg>
+        </div>
+
+        <div class="temple" id="temple">
+            <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="templeGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#f5e6a3"/>
+                        <stop offset="100%" stop-color="#c9a84c"/>
+                    </linearGradient>
+                </defs>
+
+                <polygon points="100,8 30, 52 170, 52" fill="url(#templeGrad)" opacity=".9"/>
+                <line x1="100" y1="8" x2="100" y2="52" stroke="#a07828" stroke-width="1" opacity=".5"/>
+                <rect x="28" y="52" width="144" height="6" fill="#c9a84c" rx="1"/>
+                <rect x="40" y="58" width="8" height="62" fill="#d4b85a" rx="2" opacity=".85"/>
+                <rect x="68" y="58" width="8" height="62" fill="#d4b85a" rx="2" opacity=".85"/>
+                <rect x="96" y="58" width="8" height="62" fill="#d4b85a" rx="2" opacity=".85"/>
+                <rect x="124" y="58" width="8" height="62" fill="#d4b85a" rx="2" opacity=".85"/>
+                <rect x="152" y="58" width="8" height="62" fill="#d4b85a" rx="2" opacity=".85"/>
+                <rect x="24" y="120" width="152" height="6" fill="#a07828" rx="1"/>
+                <circle cx="100" cy="14" r="6" fill="#f5e6a3" opacity=".7">
+                    <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values=".5;.9;.5" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="100" cy="14" r="12" fill="#c9a84c" opacity=".15">
+                    <animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+
+        <div class="gods" id="gods">
+            <div class="god">
+                <div class="god-icon">⚡</div>
+                <div class="god-label">ZEWS</div>
+            </div>
+            <div class="god">
+                <div class="god-icon">🔱</div>
+                <div class="god-label">POSEIDON</div>
+            </div>
+            <div class="god">
+                <div class="god-icon">🦉</div>
+                <div class="god-label">AFINA</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="form-row">
+            <div class="form-fields">
+                <div>
+                    <label>Your appeal</label>
+                    <textarea id="message" placeholder="Please contact to gods Olympys..."></textarea>
+                </div>
+                <div>
+                    <label>Type appeal</label>
+                    <select id="appealType">
+                        <option value="" disabled selected>Select genus appeal</option>
+                        <option value="moliTba">Prayers</option>
+                        <option value="prosiTba">Request</option>
+                        <option value="jaloba">Complaint</option>
+                        <option value="blagodarnost">Gratitude</option>
+                        <option value="predlojenie">Offer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="send-col">
+                <button class="send-btn" id="sendBtn" onclick="sendAppeal()" title="Send appeal">
+                    🕊️  
+                </button>
+                <span class="send-label">Appeal</span>
+            </div>
+        </div>
+    </div>
+    <div class="footer-text">« Iuppiter Optimus Maximus »</div>
+</div>
+
+<script src="/scripts/feedback.js"></script>
+</body>
+</html>

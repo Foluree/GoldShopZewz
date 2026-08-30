@@ -11,6 +11,7 @@ from app.profil.setting_user import router as router_sett
 from app.profil.payment_head import router as router_payment
 from app.bd_request.send_startup import seed_all_on_startup
 from app.profil.api_routers_response_tempotaly import router as router_api_temporaly
+from app.profil.feedback import router as router_feedback
 
 
 @asynccontextmanager
@@ -27,6 +28,11 @@ app.mount(
     name="static",
 )
 
+app.mount(
+    "/scripts",
+    StaticFiles(directory=str(Path(__file__).resolve().parent / "app" / "templates_js")),
+)
+
 app.include_router(router_api_temporaly)
 app.include_router(router_payment)
 app.include_router(router_sett)
@@ -34,3 +40,4 @@ app.include_router(router_profile)
 app.include_router(router_main_lob)                                          
 app.include_router(router_login)
 app.include_router(router_regist)
+app.include_router(router_feedback)
