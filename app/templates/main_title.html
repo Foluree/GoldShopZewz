@@ -5,31 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Магазин золота</title>
   <link rel="stylesheet" href="/static/main_title.css">
-  <link rel="stylesheet" href="/static/profile.css">
+  <link rel="stylesheet" href="/static/sidebar.css">
 </head>
 <body>
-  <div class="hamburger" id="hamburgerBtn" aira-label="Menu" aria-expanded="false">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-  <nav class="sidebar" id="sidebar" aria-label="Navigation">
-    <a class="sidebar-item" href="/">
-      <span class="sidebar-icon">🏠</span>
-      <span class="sidebar-label">Main</span>
-    </a>
-    <a class="sidebar-item" href="/payment">
-      <span class="sidebar-icon">🪙</span>
-      <span class="sidebar-label">Payment</span>
-    </a>
-    <a class="sidebar-item" href="/profile">
-        <span class="sidebar-icon">👤</span>
-        <span class="sidebar-label">Profile</span>
-    </a>
-  </nav>
+  {% include 'partials/sidebar.html' %}
 
   <div class="container">
     <section class="hero">
@@ -86,6 +65,7 @@
     <div class="note" id="status"></div>
   </div>
 
+  <script src="/scripts/sidebar.js"></script>
   <script src="/scripts/main_title.js"></script>
 </body>
 </html>

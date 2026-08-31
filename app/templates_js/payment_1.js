@@ -1,25 +1,3 @@
-(function () {
-    var hamburger = document.getElementById("hamburgerBtn");
-    var sidebar = document.getElementById("sidebar");
-    var overlay = document.getElementById("sidebarOverlay");
-
-    function openSidebar() {
-        sidebar.classList.add("open");
-        overlay.classList.add("open");
-        hamburger.classList.add("aria-expanded", "true");
-    }
-    function closeSidebar() {
-        sidebar.classList.remove("open");
-        overlay.classList.remove("open");
-        hamburger.classList.remove("open");
-        hamburger.setAttribute("aria-expanded", "false");
-    }
-
-    hamburger.addEventListener("click", function() {
-        sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
-    });
-})();
-
 const FALLBACK_SHOPS = [
     { id: 1,  name: "Санлайт",      address: "ТЦ «Атриум», Земляной Вал, д. 33, Москва",hours: "10:00–22:00", phone: "+7 495 000-11-01", quantity_1g: 3,  quantity_5g: 5,  quantity_10g: 1  },
     { id: 2,  name: "Адамас",       address: "ТЦ «Европейский», пл. Киевского Вокзала, д. 2, Москва",    hours: "10:00–22:00", phone: "+7 495 000-11-02", quantity_1g: 2,  quantity_5g: 6,  quantity_10g: 3  },

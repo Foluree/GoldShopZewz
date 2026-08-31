@@ -5,30 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Store with gold - 1g / 5g / 10g</title>
     <link rel="stylesheet" href="/static/payment_1.css"/>
-    <link rel="stylesheet" href="/static/profile.css"/>
+    <link rel="stylesheet" href="/static/sidebar.css"/>
 </head>
 <body>
-    <div class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <nav class="sidebar" id="sidebar" aria-label="Navigation">
-        <a class="sidebar-item" href="/">
-            <span class="sidebar-icon">🏠</span>
-            <span class="sidebar-label">Main</span>
-        </a>
-        <a class="sidebar-item" href="/payment">
-            <span class="sidebar-icon">🪙</span>
-            <span class="sidebar-label">Payment</span>
-        </a>
-        <a class="sidebar-item" href="/profile">
-            <span class="sidebar-icon">👤</span>
-            <span class="sidebar-label">Profile</span>
-        </a>
-    </nav>
+    {% include 'partials/sidebar.html' %}
 
     <div class="container">
         <section class="hero">
@@ -74,6 +54,7 @@
         <span id="buyToastText">Your are successful bayment</span>
     </div>
  
+    <script src="/scripts/sidebar.js"></script>
     <script src="/scripts/payment_1.js"></script>
 </body>
 </html>

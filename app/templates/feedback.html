@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Request with Olympys</title>
 <link rel="stylesheet" href="/static/feedback.css">
+<link rel="stylesheet" href="/static/sidebar.css">
 </head>
 <body>
+
+{% include 'partials/sidebar.html' %}
 
 <div class="stars" id="stars"></div>
 
@@ -139,6 +142,7 @@
     <div class="footer-text">« Iuppiter Optimus Maximus »</div>
 </div>
 
+<script src="/scripts/sidebar.js"></script>
 <script src="/scripts/feedback.js"></script>
 </body>
 </html>
