@@ -6,6 +6,7 @@ from sqlalchemy import select
 from app.bd_and_config.postgres_engine import async_session_pg
 from app.models.offers_model import Offers
 from app.models.shops1_model import Shops
+from app.bd_request.apeal_added import send_appeal_types
 
 _EXTERNAL_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
@@ -62,3 +63,8 @@ async def seed_all_on_startup() -> None:
         await seed_shops()
     except Exception as exc:
         print(f"[seed shops] failed on startup: {exc}")
+
+    try:
+        await send_appeal_types()
+    except Exception as exc:
+        print(f"[seed rtypes] failed on startup: {exc}")
