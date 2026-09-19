@@ -1,7 +1,14 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, Depends
+from fastapi.responses import HTMLResponse, JSONResponse
 from pathlib import Path
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.bd_and_config.postgres_engine import get_session
+from app.bd_request.hased_password.hased_cookie import verify_accses_token
+from app.bd_request.local_profile_request import load_auth_user, get_or_create_user_profile
+from app.bd_request.apeal_added import create_appeal, APPEAL_TYPES
+from app.models.appeal_model import AppealIn
 
 router = APIRouter(
     prefix="/feedback",
@@ -18,3 +25,29 @@ async def home(request: Request):
             "request": request,
         }
     )
+
+@router.post("/api", status_code=201)
+async def send_appeal(appeal: AppealIn, request: Request, session: AsyncSession = Depends(get_session)):
+    known_types = {name for name, _ in APPEAL_TYPES}
+    if appeal.table not in known_types:
+        return JSONResponse(status_code=400, content={"message": "Unknown appeal type"})
+
+    token = request.cookies.get("booking_accses_token")
+    user_id = verify_accses_token(token)
+    if not user_id:
+        return JSONResponse(status_code=401, content={"message": "Required login in the auth"})
+
+    auth_user = await load_auth_user(session, int(user_id))
+    if not auth_user:
+        return JSONResponse(status_code=401, content={"message": "User not found"})
+
+    profile = await get_or_create_user_profile(session, auth_user["email_us"])
+
+    appeal_id = await create_appeal(
+        session,
+        profile['id'],
+        profile.table,
+        appeal.appeal
+    )
+
+    return {"message": "Appeal accepted", "appeal_id": appeal_id}
