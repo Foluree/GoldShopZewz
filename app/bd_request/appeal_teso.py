@@ -7,8 +7,8 @@ from app.models.appeal_model import (
     TypesAppeal,
 )
 from app.bd_and_config.postgres_engine import async_session_pg
-from sqlalchemy import select
 from app.bd_request.local_profile_request import get_or_create_user_profile
+from sqlalchemy import select
 
 APPEAL_TYPES = [
     ("Prayers", "PreyersAppeal"),
@@ -28,47 +28,47 @@ APPEAL_SUBCLASSES = {
 DEMO_APPEALS = [
     (
         "Prayers",
-        "Пусть Зевс хранит мое новое золото и приносит удачу в делах, "
+        "Пусть Зевс хранит моё новое золото и приносит удачу в делах, "
         "чтобы слитки только росли в цене и не терялись.",
     ),
     (
         "Request",
-        "Прошу зарезевировать слиток 5 г в мазазине на Елисейских полях "
-        "и уведомить, когда его будет можно забрать мне лично.",
+        "Прошу зарезервировать слиток 5 г в магазине на Елисейских полях "
+        "и уведомить, когда его можно будет забрать лично.",
     ),
     (
         "Complaint",
-        "Слиток 1 г пришел с царапиной на блистере. Прошу проверить качество "
+        "Слиток 1 г пришёл с царапиной на блистере. Прошу проверить качество "
         "упаковки перед отгрузкой, чтобы избежать повреждений при доставке.",
     ),
     (
-        "Grantitude",
-        "Спасибо за быструю доставку и полный коплект сертификатов "
-        "подлиности. Всем доволен, закажу еще раз."
+        "Gratitude",
+        "Спасибо за быструю доставку и полный комплект сертификатов "
+        "подлинности. Всем доволен, закажу ещё раз.",
     ),
     (
         "Offer",
-        "Предлогаю оптовое сотрудничество по скупке лома золота. "
-        "Готов обсудить обьемы поставок и цены на золото.",
+        "Предлагаю оптовое сотрудничество по скупке лома золота. "
+        "Готов обсудить объёмы поставок и цены на золото.",
     ),
 ]
 
 async def send_appeal_types() -> None:
-    async with async_session_pg as session:
+    async with async_session_pg() as session:
         existing = set((await session.execute(select(TypesAppeal.name))).scalars().all())
 
-        instred = 0
+        inserted = 0
         skipped = 0
         for name, table_ref in APPEAL_TYPES:
-            if __name__ in existing:
+            if name in existing:
                 skipped += 1
                 continue
             session.add(TypesAppeal(name=name, table_ref=table_ref))
             existing.add(name)
-            instred += 1
+            inserted += 1
 
         await session.commit()
-        print(f"[seed offers] Added: {instred}, skip (already exist): {skipped}.")
+        print(f"[seed appeal types] Added: {inserted}, skip (already exist): {skipped}.")
 
 async def create_appeal(session, user_id: int, email_user: str, table_name: str, appeal: str) -> int:
     base = Undertable_appeal(
@@ -88,10 +88,10 @@ async def create_appeal(session, user_id: int, email_user: str, table_name: str,
     return base.id
 
 async def seed_appeals() -> None:
-    async with async_session_pg as session:
+    async with async_session_pg() as session:
         existing = set((await session.execute(select(Undertable_appeal.appeal))).scalars().all())
 
-        profile = await get_or_create_user_profile(session, "demo@gold.olumpus")
+        profile = await get_or_create_user_profile(session, "demo@gold.olympus")
 
         inserted = 0
         skipped = 0

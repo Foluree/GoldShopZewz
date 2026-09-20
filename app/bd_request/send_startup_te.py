@@ -54,7 +54,7 @@ async def seed_shops() -> None:
         print(f"[seed shops] Added: {inserted}, skip (already exist): {skipped}")
 
 async def seed_all_on_startup() -> None:
-    try: 
+    try:
         await seed_offers()
     except Exception as exc:
         print(f"[seed offers] failed on startup: {exc}")

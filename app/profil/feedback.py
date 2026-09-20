@@ -17,7 +17,7 @@ router = APIRouter(
 
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse) 
 async def home(request: Request):
     return templates.TemplateResponse(
         "feedback.html",
@@ -46,8 +46,9 @@ async def send_appeal(appeal: AppealIn, request: Request, session: AsyncSession 
     appeal_id = await create_appeal(
         session,
         profile['id'],
-        profile.table,
-        appeal.appeal
+        profile["email"],
+        appeal.table_name,
+        appeal.appeal,
     )
 
     return {"message": "Appeal accepted", "appeal_id": appeal_id}

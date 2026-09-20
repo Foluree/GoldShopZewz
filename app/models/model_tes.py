@@ -9,7 +9,7 @@ class Undertable_appeal(Base_Pg):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("UserProfiles.id")) 
+    user_id: Mapped[int] = mapped_column(ForeignKey("UserProfiles.id"))
     email_user: Mapped[str] = mapped_column(String)
 
     table_name: Mapped[str] = mapped_column(String)
