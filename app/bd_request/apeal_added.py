@@ -42,7 +42,7 @@ DEMO_APPEALS = [
         "упаковки перед отгрузкой, чтобы избежать повреждений при доставке.",
     ),
     (
-        "Grantitude",
+        "Gratitude",
         "Спасибо за быструю доставку и полный коплект сертификатов "
         "подлиности. Всем доволен, закажу еще раз."
     ),
@@ -54,13 +54,13 @@ DEMO_APPEALS = [
 ]
 
 async def send_appeal_types() -> None:
-    async with async_session_pg as session:
+    async with async_session_pg() as session:
         existing = set((await session.execute(select(TypesAppeal.name))).scalars().all())
 
         instred = 0
         skipped = 0
         for name, table_ref in APPEAL_TYPES:
-            if __name__ in existing:
+            if name in existing:
                 skipped += 1
                 continue
             session.add(TypesAppeal(name=name, table_ref=table_ref))
@@ -88,7 +88,7 @@ async def create_appeal(session, user_id: int, email_user: str, table_name: str,
     return base.id
 
 async def seed_appeals() -> None:
-    async with async_session_pg as session:
+    async with async_session_pg() as session:
         existing = set((await session.execute(select(Undertable_appeal.appeal))).scalars().all())
 
         profile = await get_or_create_user_profile(session, "demo@gold.olumpus")
