@@ -8,7 +8,14 @@ from app.bd_and_config.postgres_engine import get_session
 from app.bd_request.hased_password.hased_cookie import verify_accses_token
 from app.bd_request.local_profile_request import load_auth_user, get_or_create_user_profile
 from app.bd_request.apeal_added import create_appeal, APPEAL_TYPES
-from app.models.appeal_model import AppealIn
+from app.models.appeal_model import (
+    AppealIn,
+    PreyersAppeal,
+    Request as Req,
+    Complaint,
+    Gratitude,
+)
+from sqlalchemy import select
 
 router = APIRouter(
     prefix="/feedback",
@@ -51,4 +58,39 @@ async def send_appeal(appeal: AppealIn, request: Request, session: AsyncSession 
         appeal.appeal,
     )
 
-    return {"message": "Appeal accepted", "appeal_id": appeal_id}
+    return {"message": "Appeal accepted", "appeal_id": appeal_id} 
+
+APPEAL_MODELS = [PreyersAppeal, Req, Complaint, Gratitude]
+
+@router.get("/api", status_code=200)
+async def get_appeals(request: Request, session: AsyncSession = Depends(get_session)):
+    token = request.cookies.get("booking_accses_token")
+    user_id = verify_accses_token(token)
+    if not user_id:
+        return JSONResponse(status_code=401, content={"message": "Required login in the auth"})
+
+    auth_user = await load_auth_user(session, int(user_id))
+    if not auth_user:
+        return JSONResponse(status_code=401, content={"message": "User not found"})
+
+    profile = await get_or_create_user_profile(session, auth_user["email_us"])
+
+    appeals = []
+    for model in APPEAL_MODELS:
+        rows = (
+            await session.execute(
+                select(model).where(model.user_id == profile['id']).order_by(model.id)
+            )
+        ).scalars().all()
+        for row in rows:
+            appeals.append(
+                {
+                    "id": row.id,
+                    "user_id": row.user_id,
+                    "email_user": row.email_user,
+                    "table_name": row.table_name,
+                    "appeal": row.appeal,
+                }
+            )
+
+    return {"appeals": appeals}
