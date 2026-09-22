@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from app.bd_and_config.postgres_engine import Base_Pg
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, Float, Date, ForeignKey
+from app.models.profile_model import UserProfiles
 
 
 class Undertable_appeal(Base_Pg):

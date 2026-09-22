@@ -94,3 +94,25 @@ async def get_appeals(request: Request, session: AsyncSession = Depends(get_sess
             )
 
     return {"appeals": appeals}
+
+@router.get("/api/all", status_code=200)
+async def get_all_appeals(session: AsyncSession = Depends(get_session)):
+    appeals = []
+    for model in APPEAL_MODELS:
+        rows = (
+            await session.execute(
+                select(model).order_by(model.id)
+            )
+        ).scalars().all()
+        for row in rows:
+            appeals.append(
+                {
+                    "id": row.id,
+                    "user_id": row.user_id,
+                    "email_user": row.email_user,
+                    "table_name": row.table_name,
+                    "appeal": row.appeal,
+                }
+            )
+
+    return {"appeals": appeals}
