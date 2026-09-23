@@ -10,10 +10,7 @@ from app.bd_request.local_profile_request import load_auth_user, get_or_create_u
 from app.bd_request.apeal_added import create_appeal, APPEAL_TYPES
 from app.models.appeal_model import (
     AppealIn,
-    PreyersAppeal,
-    Request as Req,
-    Complaint,
-    Gratitude,
+    Undertable_appeal,
 )
 from sqlalchemy import select
 
@@ -36,7 +33,7 @@ async def home(request: Request):
 @router.post("/api", status_code=201)
 async def send_appeal(appeal: AppealIn, request: Request, session: AsyncSession = Depends(get_session)):
     known_types = {name for name, _ in APPEAL_TYPES}
-    if appeal.table not in known_types:
+    if appeal.table_name not in known_types:
         return JSONResponse(status_code=400, content={"message": "Unknown appeal type"})
 
     token = request.cookies.get("booking_accses_token")
@@ -58,9 +55,7 @@ async def send_appeal(appeal: AppealIn, request: Request, session: AsyncSession 
         appeal.appeal,
     )
 
-    return {"message": "Appeal accepted", "appeal_id": appeal_id} 
-
-APPEAL_MODELS = [PreyersAppeal, Req, Complaint, Gratitude]
+    return {"message": "Appeal accepted", "appeal_id": appeal_id}
 
 @router.get("/api", status_code=200)
 async def get_appeals(request: Request, session: AsyncSession = Depends(get_session)):
@@ -75,44 +70,44 @@ async def get_appeals(request: Request, session: AsyncSession = Depends(get_sess
 
     profile = await get_or_create_user_profile(session, auth_user["email_us"])
 
-    appeals = []
-    for model in APPEAL_MODELS:
-        rows = (
-            await session.execute(
-                select(model).where(model.user_id == profile['id']).order_by(model.id)
-            )
-        ).scalars().all()
-        for row in rows:
-            appeals.append(
-                {
-                    "id": row.id,
-                    "user_id": row.user_id,
-                    "email_user": row.email_user,
-                    "table_name": row.table_name,
-                    "appeal": row.appeal,
-                }
-            )
+    rows = (
+        await session.execute(
+            select(Undertable_appeal)
+            .where(Undertable_appeal.user_id == profile["id"])
+            .order_by(Undertable_appeal.id)
+        )
+    ).scalars().all()
 
-    return {"appeals": appeals}
+    return {
+        "appeals": [
+            {
+                "id": row.id,
+                "user_id": row.user_id,
+                "email_user": row.email_user,
+                "table_name": row.table_name,
+                "appeal": row.appeal,
+            }
+            for row in rows
+        ]
+    }
 
 @router.get("/api/all", status_code=200)
 async def get_all_appeals(session: AsyncSession = Depends(get_session)):
-    appeals = []
-    for model in APPEAL_MODELS:
-        rows = (
-            await session.execute(
-                select(model).order_by(model.id)
-            )
-        ).scalars().all()
-        for row in rows:
-            appeals.append(
-                {
-                    "id": row.id,
-                    "user_id": row.user_id,
-                    "email_user": row.email_user,
-                    "table_name": row.table_name,
-                    "appeal": row.appeal,
-                }
-            )
+    rows = (
+        await session.execute(
+            select(Undertable_appeal).order_by(Undertable_appeal.id)
+        )
+    ).scalars().all()
 
-    return {"appeals": appeals}
+    return {
+        "appeals": [
+            {
+                "id": row.id,
+                "user_id": row.user_id,
+                "email_user": row.email_user,
+                "table_name": row.table_name,
+                "appeal": row.appeal,
+            }
+            for row in rows
+        ]
+    }

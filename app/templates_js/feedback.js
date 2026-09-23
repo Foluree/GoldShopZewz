@@ -73,13 +73,47 @@ function showGods() {
     }
 }
 
-function sendAppeal() {
+async function sendAppeal() {
     const btn = document.getElementById('sendBtn');
+    const message = document.getElementById('message');
+    const appealType = document.getElementById('appealType');
+
+    const text = message.value.trim();
+    const type = appealType.value;
+
+    if (!text) {
+        alert('Please write yours appeal before send.');
+        return;
+    }
+    if (!type) {
+        alert('Please select type appeal.');
+        return;
+    }
+
+    btn.disabled = true;
     btn.style.transform = 'scale(1.3) rotate(15deg)';
-    btn.style.boxShadow = '0 0 50px rgba(201,168,76,.8)';
-    setTimeout(() => {
-        btn.style.transform = '';
-        btn.style.boxShadow = '';
-        alert('🗳️ Yours appeal accepted and will reviewed gods Olympys.')
-    }, 400);
+    btn.style.boxShadow = '0 0 50px rgba(19, 16, 11, 0.8)';
+
+    try {
+        const res = await fetch('/feedback/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table_name: type, appeal: text }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            alert('Error: ' + (data.message || res.status));
+            return;
+        }
+        message.value = '';
+        alert('🗳️ Yours appeal accepted (id ' + data.appeal_id + ') and will reviewed gods Olympys.');
+    } catch (err) {
+        alert('Send failed: ' + err);
+    } finally {
+        btn.disabled = false;
+        setTimeout(() => {
+            btn.style.transform = '';
+            btn.style.boxShadow = '';
+        }, 400);
+    }
 }

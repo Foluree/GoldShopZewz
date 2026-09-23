@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from app.main_title_router import router as router_main_lob
 from app.profil.main_profil import router as router_profile
@@ -21,6 +21,13 @@ async def lifespan(app: FastAPI):
 
     
 app = FastAPI(title="Gold Shop", lifespan=lifespan)
+
+@app.middleware("http")
+async def no_cache_static(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/scripts/") or request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 app.mount(
     "/static",
