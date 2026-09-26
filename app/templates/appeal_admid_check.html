@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appeals · Moderations</title>
+<link rel="stylesheet" href="/static/appeal_admid_check.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="brand">Gold<span>Shop</span> <em>Editorial</em></div>
+    <div class="topbar-title">
+        <h1>Appeal
+            <span>Appeal &mdash; Moderation Desk</span>
+        </h1>
+    </div>
+    <div class="topmeta">
+        <span>Tom XLLI &nbsp;·&nbsp; № <span id="shownCount">{{ appeals|length }}</span> of {{ appeals|length }} records</span>
+        <a href="/">← Continue in main</a>
+    </div>
+</header>
+
+<main class="wrap">
+    <aside class="cats">
+        <h2>Categries</h2>
+        <button class="cat-btn active" data-cat="All" type="button">
+            <span>All appeals</span><span class="cnt">{{ appeals|length }}</span>
+        </button>
+        {% for cat in categories %}
+        <button class="cat-btn" data-cat="{{ cat }}" type="button">
+            <span>{{ cat }}</span><span class="cnt">{{ appeals | selectattr('table_name', 'equalto', cat) | list | length }}</span>
+        </button>
+        {% endfor %}
+        <p class="cats-footnote">
+            Данные подгружаются из базы; ручки модерации в разработке —
+            кнопки приёма и отклонения пока неактивны.        
+        </p>
+    </aside>
+
+    <section class="cards">
+        <h2>List appeals</h2>
+
+        {% set labels = {'Prayers': 'Молитва', 'Request': 'Запрос', 'Complaint': 'Жалоба', 'Gratitude': 'Благодарность', 'Offer': 'Предложение'} %}
+        {% set printed = namespace(count=0) %}
+
+        {% for cat in categories %}
+            {% for appeal in appeals if appeal['table_name'] == cat %}
+            {% set printed.count = printed.count + 1 %}
+            <article class="card" data-category="{{ cat }}">
+                <div class="card-main">
+                    <div class="card-head">
+                        <div class="card-cat">
+                            <span class="tag">{{ cat }}</span>
+                            <span class="periodical-no">№ {{ '%03d'|format(appeal['id']) }} &mdash; {{ labels.get(cat, '') }}</span>
+                        </div>
+                        <div class="card-meta">Submitted &nbsp;·&nbsp; id&nbsp;{{ appeal['id'] }}</div>
+                    </div>
+                    <p class="card-appeal">«{{ appeal['appeal'] }}»</p>
+                    <div class="card-footer">
+                        <span>From: <b>{{ appeal['email_user'] }}</b></span>
+                        <span>table_name: <b>{{ appeal['table_name'] }}</b></span>
+                        <span>user_id: <b>{{ appeal['user_id'] }}</b></span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="action reject">
+                        <label>Cause deviation</label>
+                        <textarea rows="2" placeholder="Please specify the reason deviation"></textarea>
+                        <button class="action-btn btn-reject" type="button">Reject</button>
+                    </div>
+                    <div class="action accept">
+                        <label>Cause accept</label>
+                        <textarea rows="2" placeholder="Please specify the reason accept"></textarea>
+                        <button class="action-btn btn-accept" type="button">Accept</button>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        {% endfor %}
+
+        {% if not appeals %}
+        <p class="card-empty" id="emptyHint" style="display:block">Appeals is not</p>
+        {% else %}
+        <p class="card-empty" id="emptyHint">Into this category is not appeal.</p>
+        {% endif %}
+    </section>
+</main>
+<footer class="page-foot">
+    <span>Gold Appeal Desk - data of base</span>
+    <span>Typography № 4 &nbsp;·&nbsp; September 2026</span>
+</footer>
+<script src="/scripts/appeal_admid_check.js"></script>
+</body>
+</html>
