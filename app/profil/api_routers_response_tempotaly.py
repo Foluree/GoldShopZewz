@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from app.models.shops_model import OrderIn, ShopCreate, OfferCreate, BuyIn
 from app.models.shops1_model import Shops
-from app.models.offers_model import Offers  
+from app.models.offers_model import Offers
 from sqlalchemy import text, insert
 from app.bd_and_config.postgres_engine import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,6 +34,7 @@ def _price_for_weight(offers: list[dict], weight: str) -> float:
             return float(offer.get("price") or 0)
     return _FALLBACK_PRICES.get(weight, 0.0)
 
+
 @router.post("/shops", status_code=201)
 async def create_shop(shop: ShopCreate, session: AsyncSession = Depends(get_session)):
     result = await session.execute(
@@ -58,12 +59,10 @@ async def create_offer(offer: OfferCreate, session: AsyncSession = Depends(get_s
     create_offer = result.mappings().one()
     return {"Offers": dict(create_offer)}
 
-
 @router.get("/shops")
 async def get_shops(session: AsyncSession = Depends(get_session)):
     shops = await _fetch_all(session, "shops")
     return {"shops": shops}
-
 
 @router.post("/shops/{shop_id}/buy")
 async def buy_from_shop(shop_id: int, buy: BuyIn, request: Request, session: AsyncSession = Depends(get_session)):
@@ -84,10 +83,10 @@ async def buy_from_shop(shop_id: int, buy: BuyIn, request: Request, session: Asy
 
     shop = await _fetch_one(session, "shops", shop_id)
     if not shop:
-        return JSONResponse(status_code=404, content={"message": "Магазин не найден"})
+        return JSONResponse(status_code=404, content={"message": "Товара нет в наличии"})
 
     if shop.get(column, 0) <= 0:
-        return JSONResponse(status_code=400, content={"message": "Товара нет в наличии"})
+        return JSONResponse(status_code=400, content={"message": "Procuct not found"})
 
     offers = await _fetch_all(session, "offers")
     price = _price_for_weight(offers, buy.weight)
@@ -116,14 +115,12 @@ async def buy_from_shop(shop_id: int, buy: BuyIn, request: Request, session: Asy
         "weight": buy.weight,
         "quantities": quantities,
         "purchase": purchase,
-        }
-
+    }
 
 @router.get("/offers")
 async def get_offers(session: AsyncSession = Depends(get_session)):
     offers = await _fetch_all(session, "offers")
     return {"offers": offers}
-
 
 @router.post("/order", status_code=201)
 async def create_order(order: OrderIn, session: AsyncSession = Depends(get_session)):
@@ -131,9 +128,9 @@ async def create_order(order: OrderIn, session: AsyncSession = Depends(get_sessi
     offer = await _fetch_one(session, "offers", order.offer_id)
 
     if not offer:
-        return JSONResponse(status_code=404, content={"message": "Товар не найден"})
+        return JSONResponse(status_code=404, content={"message": "Product not found"})
     if not shop:
-        return JSONResponse(status_code=404, content={"message": "Магазин не найден"})
+        return JSONResponse(status_code=404, content={"message": "Store not found"})
 
     order_result = await session.execute(
         text(
@@ -141,7 +138,7 @@ async def create_order(order: OrderIn, session: AsyncSession = Depends(get_sessi
             'VALUES (:offer_id, :shop_id, :quantity) '
             'RETURNING id, offer_id, shop_id, quantity '
         ),
-        order.model_dump(),
+        order.model_dump()
     )
 
     await session.commit()
@@ -150,8 +147,8 @@ async def create_order(order: OrderIn, session: AsyncSession = Depends(get_sessi
     total = offer["price"] * order.quantity
     return {
         "message": (
-            f"Заказ принят: {order.quantity} × {offer['title']} "
-            f"в точке '{shop['name']}'. Сумма: {total:.2f} €"
+            f"Order accept: {order.quantity} x {offer['title']} "
+            f"In point '{shop['name']}'. Price: {total:.2f} €"
         ),
         "order": created_order
     }
