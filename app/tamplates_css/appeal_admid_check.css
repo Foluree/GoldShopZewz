@@ -225,6 +225,44 @@ body {
     text-align: right;
 }
 
+.card-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 8px;
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    border: 1px solid var(--line);
+    color: var(--muted);
+}
+.card-badge.badge-accept { color: var(--green); border-color: var(--green); }
+.card-badge.badge-reject { color: var(--red); border-color: var(--red); }
+
+.card-answer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+.card-answer[hidden] { display: none; }
+.card-answer-label {
+    display: block;
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+.card-answer .textplate { margin: 0; white-space: pre-wrap; }
+.card-answer-mail {
+    display: block;
+    margin-top: 6px;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
 .card-appeal {
     font-family: var(--font-display);
     font-size: 1.18rem;

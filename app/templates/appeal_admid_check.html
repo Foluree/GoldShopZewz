@@ -20,7 +20,7 @@
         <a href="/">← Continue in main</a>
     </div>
 </header>
-
+ 
 <main class="wrap">
     <aside class="cats">
         <h2>Categries</h2>
@@ -33,8 +33,8 @@
         </button>
         {% endfor %}
         <p class="cats-footnote">
-            Данные подгружаются из базы; ручки модерации в разработке —
-            кнопки приёма и отклонения пока неактивны.        
+            Данные подгружаются из базы; кнопки приема и отклонения сохраняют
+            решение (<b>canceled</b>) и ответ модератора в таблицу AppealAnswers.
         </p>
     </aside>
 
@@ -47,20 +47,32 @@
         {% for cat in categories %}
             {% for appeal in appeals if appeal['table_name'] == cat %}
             {% set printed.count = printed.count + 1 %}
-            <article class="card" data-category="{{ cat }}">
+            <article class="card" data-category="{{ cat }}" data-appeal-id="{{ appeal['id'] }}">
                 <div class="card-main">
                     <div class="card-head">
                         <div class="card-cat">
                             <span class="tag">{{ cat }}</span>
                             <span class="periodical-no">№ {{ '%03d'|format(appeal['id']) }} &mdash; {{ labels.get(cat, '') }}</span>
                         </div>
-                        <div class="card-meta">Submitted &nbsp;·&nbsp; id&nbsp;{{ appeal['id'] }}</div>
+                        <div class="card-meta">
+                            Submitted &nbsp;·&nbsp; id&nbsp;{{ appeal['id'] }}
+                            {% if appeal['answered'] %}
+                            <span class="card-badge {{ 'badge-accept' if appeal['reaction'] else 'badge-reject' }}">{{ 'Accepted' if appeal['reaction'] else 'Rejected' }}</span>
+                            {% else %}
+                            <span class="card-badge badge-pending">Pending</span>
+                            {% endif %}
+                        </div>
                     </div>
                     <p class="card-appeal">«{{ appeal['appeal'] }}»</p>
                     <div class="card-footer">
                         <span>From: <b>{{ appeal['email_user'] }}</b></span>
                         <span>table_name: <b>{{ appeal['table_name'] }}</b></span>
                         <span>user_id: <b>{{ appeal['user_id'] }}</b></span>
+                    </div>
+                    <div class="card-answer"{% if not appeal['answered'] %} hidden{% endif %}>
+                        <span class="card-answer-label">Answer of moderator</span>
+                        <p class="textplate {{ 'accept' if appeal['reaction'] else 'reject' }}" data-answer-plate>{{ appeal['answer'] or '- (without reason) -' }}</p>
+                        <span class="card-answer-mail" data-answer-mail>{{ appeal['answer_email'] }}</span>
                     </div>
                 </div>
                 <div class="actions">
