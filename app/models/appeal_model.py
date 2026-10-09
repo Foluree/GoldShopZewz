@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 from app.bd_and_config.postgres_engine import Base_Pg
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, Float, Date, ForeignKey, Boolean, text
+from sqlalchemy import String, Integer, Float, Date, ForeignKey, Boolean, text, DateTime
 from app.models.profile_model import UserProfiles
 
 
@@ -17,6 +19,11 @@ class Undertable_appeal(Base_Pg):
     appeal: Mapped[str] = mapped_column(String)
 
     canceled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=text("false"))
+
+    parent_id: Mapped[int | None] = mapped_column(
+        ForeignKey('Undertable_appeal.id'), nullable=True, default=None
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=text('now()'))
 
 class PreyersAppeal(Undertable_appeal):
     __tablename__ = "PrayersAppeal"
@@ -61,6 +68,8 @@ class AppealAnswers(Base_Pg):
 
     answer: Mapped[str] = mapped_column(String, default="")
 
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=text('now()'))
+
 
 class AppealIn(BaseModel):
     table_name: str = Field(..., min_length=1)
@@ -70,3 +79,7 @@ class AppealModerationIn(BaseModel):
     appeal_id: int = Field(..., ge=1)
     reaction: bool = False
     answer: str = ""
+
+class AppealReplyIn(BaseModel):
+    appeal_id: int = Field(..., ge=1)
+    text: str = ""

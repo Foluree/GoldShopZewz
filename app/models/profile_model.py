@@ -27,3 +27,21 @@ class UserProfiles(Base_Pg):
     bonus_point: Mapped[int] = mapped_column(Integer)
     purchasesAll: Mapped[list[BayProfileItem]] = relationship("BayProfileItem",
                                                               back_populates="user")
+
+
+"""
+    images: Mapped[list["UserImages"]] = relationship(
+        "UserImages",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+class UserImages(Base_Pg):
+    __tablename__ = "UserImages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    path: Mapped[str] = mapped_column(String, nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('UserProfiles.id', ondelete="CASCADE"))
+    user: Mapped['UserProfiles'] = relationship('UserProfiles', back_populates='images')
+"""

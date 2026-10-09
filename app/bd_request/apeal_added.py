@@ -70,7 +70,7 @@ async def send_appeal_types() -> None:
         await session.commit()
         print(f"[seed offers] Added: {instred}, skip (already exist): {skipped}.")
 
-async def create_appeal(session, user_id: int, email_user: str, table_name: str, appeal: str) -> int:
+async def create_appeal(session, user_id: int, email_user: str, table_name: str, appeal: str, parent_id: int | None = None) -> int:
     subclass = APPEAL_SUBCLASSES.get(table_name)
     if subclass:
         appeal_obj = subclass(
@@ -78,6 +78,7 @@ async def create_appeal(session, user_id: int, email_user: str, table_name: str,
             email_user=email_user,
             table_name=table_name,
             appeal=appeal,
+            parent_id=parent_id,
         )
     else:
         appeal_obj = Undertable_appeal(
@@ -85,6 +86,7 @@ async def create_appeal(session, user_id: int, email_user: str, table_name: str,
             email_user=email_user,
             table_name=table_name,
             appeal=appeal,
+            parent_id=parent_id,
         )
 
     session.add(appeal_obj)

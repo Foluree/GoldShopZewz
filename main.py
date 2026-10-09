@@ -13,6 +13,7 @@ from app.bd_request.send_startup import seed_all_on_startup
 from app.profil.api_routers_response_tempotaly import router as router_api_temporaly
 from app.profil.feedback import router as router_feedback
 from app.profil.appeal_admid_check import router as router_appeal_admid_check
+from app.profil.appeal_dialog import router as router_appeal_dialog
 
 
 @asynccontextmanager
@@ -50,3 +51,4 @@ app.include_router(router_login)
 app.include_router(router_regist)
 app.include_router(router_feedback)
 app.include_router(router_appeal_admid_check)
+app.include_router(router_appeal_dialog)

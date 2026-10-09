@@ -210,6 +210,15 @@ body {
     background: var(--ink);
     padding: 5px 10px;
 }
+.card-cat .tag-reply {
+    font-size: .6rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    background: transparent;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 4px 8px;
+}
 .card-cat .periodical-no {
     font-family: var(--font-display);
     font-style: italic;

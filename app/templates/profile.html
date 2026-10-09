@@ -11,6 +11,39 @@
     {% include 'partials/sidebar.html' %}
 
     <div class="container">
+        <section class="panel dialogs-panel">
+            <div class="dialogs-head">
+                <h2>
+                    Диалоги
+                    <span class="bell {{ 'on' if dialogs_new else '' }}" id="dialogsBell">
+                        🔔<i class="bell-count">{{ dialogs_new }}</i>
+                    </span>
+                </h2>
+                <span class="dialogs-sub">{{ dialogs|length }} tickets · {{ dialogs_new }} no response</span>
+            </div>
+
+            {% if dialogs %}
+            <ul class="dialogs">
+                {% for d in dialogs %}
+                <li class="dialog-item {{ 'is-new' if d.awaiting_user }}">
+                    <a href="/appeal_admid_check/dialog?appeal_id={{ d.root_id }}">
+                        <span class="dialog-dot"></span>
+                        <span class="dialog-main">
+                            <span class="dialog-top">
+                                <b>{{ d.table_name }}</b>
+                                <span class="dialog-state">{{ 'New response' if d.awaiting_user else 'wait response' }}</span>
+                            </span>
+                            <span class="dialog-preview">{{ d.last_text }}</span>
+                        </span>
+                        <span class="dialog-id">№{{ d.root_id }} · {{ d.messages_count }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="dialogs-empty">Not found dialoges - response moderation not found is here.</p>
+            {% endif %}
+        </section>
         <section class="panel">
             {% if saved %}
             <p class="success">Profile is saved.</p>

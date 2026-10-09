@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialog · Appeal</title>
+<link rel="stylesheet" href="/static/appeal_dialog.css">
+</head>
+<body>
+
+<div class="fx-grid"></div>
+<div class="fx-aurora"><i></i><i></i><i></i></div>
+<div class="fx-grain"></div>
+
+<main class="chat">
+    <header class="chat-head">
+        <a class="chat-back" href="/profile">← Profile</a>
+        <div class="chat-title">
+            <h1 id="threadTitle">Dialog</h1>
+            <span class="chat-sub" id="threadSub">loading…</span>
+        </div>
+        <span class="chat-badge" id="threadBadge"></span>
+    </header>
+
+    <section class="chat-thread" id="thread">
+        <p class="chat-loading">Loading dialog…</p>
+    </section>
+
+    <footer class="chat-compose">
+        <textarea id="replyText" rows="1" placeholder="Write your reply…"></textarea>
+        <button class="chat-send" id="replyBtn" type="button">Send</button>
+    </footer>
+</main>
+
+<script>
+    window.DIALOG_APPEAL_ID = {{ appeal_id }};
+    window.DIALOG_PROFILE = {{ profile | tojson }};
+</script>
+<script src="/scripts/appeal_dialog.js"></script>
+</body>
+</html>

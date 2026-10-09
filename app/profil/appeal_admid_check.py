@@ -1,14 +1,14 @@
 from pathlib import Path
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bd_and_config.postgres_engine import get_session
-from app.bd_request.hased_password.hased_cookie import verify_accses_token
-from app.bd_request.local_profile_request import load_auth_user, get_or_create_user_profile
+from app.bd_request.hased_password.hased_cookie import get_current_profile
+from app.bd_request.local_profile_request import get_or_create_user_profile
 from app.models.appeal_model import (
     AppealAnswers,
     AppealModerationIn,
@@ -26,19 +26,6 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent
 _DEFAULT_TYPES = ["Prayers", "Request", "Complaint", "Gratitude", "Offer"]
 _MODERATOR_FALLBACK_EMAIL = 'moderator@gold.olumpus'
 
-async def _moderator_profile(session: AsyncSession, request: Request) -> dict:
-    try:
-        token = request.cookies.get('booking_accses_token')
-        user_id = verify_accses_token(token)
-        if user_id:
-            auth_user = await load_auth_user(session, int(user_id))
-            if auth_user:
-                return await get_or_create_user_profile(session, auth_user['email_us'])
-    except Exception as exc:
-        print(f'[appeal moderate] auth profile failed, fallback used: {exc}')
-
-    return await get_or_create_user_profile(session, _MODERATOR_FALLBACK_EMAIL)
-
 
 async def _category_names(session: AsyncSession) -> list[str]:
     rows = (
@@ -46,6 +33,12 @@ async def _category_names(session: AsyncSession) -> list[str]:
     ).scalars().all()
     return list(rows) or _DEFAULT_TYPES 
 
+async def _moderator_profile(session: AsyncSession, request: Request) -> dict:
+    profile = await get_current_profile(session, request)
+    if profile:
+        return profile
+
+    return await get_or_create_user_profile(session, _MODERATOR_FALLBACK_EMAIL)
 
 @router.get("/", response_class=HTMLResponse)
 async def home(request: Request, session: AsyncSession = Depends(get_session)):
@@ -74,6 +67,7 @@ async def home(request: Request, session: AsyncSession = Depends(get_session)):
                 'table_name': row.table_name,
                 'appeal': row.appeal,
                 'canceled': row.canceled,
+                'parent_id': row.parent_id,
                 'answered': last_answer is not None,
                 'reaction': last_answer.reaction if last_answer else None,
                 'answer': (last_answer.answer if last_answer else '') or '',
@@ -127,21 +121,39 @@ async def moderate_appeal(
     }
 
 @router.get('/api/answers', status_code=200)
-async def get_answers(session: AsyncSession = Depends(get_session)):
-    rows = (
-        await session.execute(select(AppealAnswers).order_by(AppealAnswers.id))
-    ).scalars().all()
+async def get_answers(
+    appeal_id: int | None = Query(None, ge=1, description='Filer by one appeal id'),
+    session: AsyncSession = Depends(get_session),
+):
+    stmt = (
+        select(AppealAnswers, Undertable_appeal)
+        .outerjoin(Undertable_appeal, AppealAnswers.appeal_id == Undertable_appeal.id)
+        .order_by(AppealAnswers.id)
+    )
+    if appeal_id:
+        stmt = stmt.where(AppealAnswers.appeal_id == appeal_id)
+
+    rows = (await session.execute(stmt)).all()
 
     return {
+        "total": len(rows),
         "answers": [
             {
-                "id": row.id,
-                "appeal_id": row.appeal_id,
-                "reaction": row.reaction,
-                "user_id": row.user_id,
-                "email_user": row.email_user,
-                "answer": row.answer,
+                'id': answer.id,
+                'appeal_id': answer.appeal_id,
+                'reaction': answer.reaction,
+                'user_id': answer.user_id,
+                'email_user': answer.email_user,
+                'answer': answer.answer,
+                'created_at': answer.created_at.isoformat() if answer.created_at else None,
+                'appeal': {
+                    'table_name': appeal.table_name if appeal else None,
+                    'email_user': appeal.email_user if appeal else None,
+                    'text': appeal.appeal if appeal else None,
+                    'canceled': appeal.canceled if appeal else None,    
+                },
             }
-            for row in rows
-        ]
+            for answer, appeal in rows
+        ],
     }
+

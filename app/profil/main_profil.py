@@ -18,6 +18,7 @@ from app.bd_request.local_profile_request import (_load_first_exito,
                                                     get_or_create_user_profile,
                                                     delete_profile_purchase)
 from app.bd_request.hased_password.hased_cookie import verify_accses_token
+from app.profil.appeal_dialog import load_user_dialogs
 
 router = APIRouter(
     prefix="/profile",
@@ -43,12 +44,16 @@ async def profile(requesto: Request, session: AsyncSession = Depends(get_session
     user = await get_or_create_user_profile(session, auth_user["email_us"])
     user["purchasesAll"] = await load_profile_purchases(session, user["id"])
 
+    dialogs = await load_user_dialogs(session, user['id'])
+
     return templates.TemplateResponse(
         "profile.html",
         {
             "request": requesto,
             "profile": user,
             "saved": requesto.query_params.get('saved') == "1",
+            'dialogs': dialogs,
+            'dialogs_new': sum(1 for dialog in dialogs if dialog['awaiting_user']),
         }
     )
 

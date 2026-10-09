@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 from jose import jwt, JWTError
 from fastapi import Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.bd_request.local_profile_request import load_auth_user
+from app.bd_request.local_profile_request import load_auth_user, get_or_create_user_profile
 from app.bd_and_config.postgres_engine import get_session
 
 cmd_txt = CryptContext(schemes="bcrypt", deprecated="auto")
@@ -57,3 +57,19 @@ async def _get_auth_user_or_redirect(requesto: Request, session: AsyncSession = 
     auth_user = await load_auth_user(session, int(user_id))
 
     return auth_user
+
+async def get_current_profile(session: AsyncSession, request: Request) -> dict | None:
+    try:
+        token = request.cookies.get('booking_accses_token')
+        user_id = verify_accses_token(token)
+        if not user_id:
+            return None
+
+        auth_user = await load_auth_user(session, int(user_id))
+        if not auth_user:
+            return None
+
+        return await get_or_create_user_profile(session, auth_user['email_us'])
+    except Exception as exc:
+        print(f'[auth] current profile failed: {exc}')
+        return None

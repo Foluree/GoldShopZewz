@@ -52,6 +52,9 @@
                     <div class="card-head">
                         <div class="card-cat">
                             <span class="tag">{{ cat }}</span>
+                            {% if appeal['parent_id'] %}
+                            <span class="tag tag-reply">↩ reply to № {{ '%03d'|format(appeal['parent_id']) }}</span>                            
+                            {% endif %}
                             <span class="periodical-no">№ {{ '%03d'|format(appeal['id']) }} &mdash; {{ labels.get(cat, '') }}</span>
                         </div>
                         <div class="card-meta">

@@ -210,3 +210,126 @@ tr:last-child td { border-bottom: 0; }
 }
 .toast.hidden { display: none; }
 
+.dialogs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.dialogs-head h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+}
+.dialogs-sub {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.bell {
+    position: relative;
+    display: inline-flex;
+    font-size: 18px;
+    line-height: 1;
+    filter: grayscale(1) opacity(.45);
+    transition: filter .2s ease, transform .2s ease;
+}
+.bell.on { filter: none; animation: bellSwing 1.4s ease-in-out 2; }
+.bell-count {
+    position: absolute;
+    top: -7px;
+    right: -11px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #111827;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.bell:not(.on) .bell-count { display: none; }
+@keyframes bellSwing {
+    0%, 100% { transform: rotate(0); }
+    20% { transform: rotate(-16deg); }
+    40% { transform: rotate(12deg); }
+    60% { transform: rotate(-8deg); }
+    80% { transform: rotate(5deg); }
+}
+
+.dialogs {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+.dialog-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .18s ease, transform .18s ease;
+}
+.dialog-item a:hover {
+    border-color: rgba(245, 158, 11, .5);
+    transform: translateX(3px);
+}
+.dialog-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--muted);
+}
+.dialog-item.is-new .dialog-dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, .18);
+}
+.dialog-main {
+    display: grid;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+.dialog-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+.dialog-state {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+.dialog-item.is-new .dialog-state { color: var(--accent); }
+.dialog-preview {
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dialog-id {
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+.dialogs-empty {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
