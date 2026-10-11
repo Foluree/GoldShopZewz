@@ -1,8 +1,15 @@
 #from pydantic import EmailStr
+from pydantic import BaseModel
 from datetime import date
 from app.bd_and_config.postgres_engine import Base_Pg
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, Float, Date, ForeignKey
+
+class ImageUploadOut(BaseModel):
+    id: int
+    path: str
+    url: str | None = None
+    model_config = {'from_attributes': True}
 
 class BayProfileItem(Base_Pg):
     __tablename__ = "BayProfileItem"
@@ -28,8 +35,6 @@ class UserProfiles(Base_Pg):
     purchasesAll: Mapped[list[BayProfileItem]] = relationship("BayProfileItem",
                                                               back_populates="user")
 
-
-"""
     images: Mapped[list["UserImages"]] = relationship(
         "UserImages",
         back_populates="user",
@@ -44,4 +49,3 @@ class UserImages(Base_Pg):
     path: Mapped[str] = mapped_column(String, nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey('UserProfiles.id', ondelete="CASCADE"))
     user: Mapped['UserProfiles'] = relationship('UserProfiles', back_populates='images')
-"""
