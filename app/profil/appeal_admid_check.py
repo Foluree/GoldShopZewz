@@ -44,46 +44,81 @@ async def _moderator_profile(session: AsyncSession, request: Request) -> dict:
 async def home(request: Request, session: AsyncSession = Depends(get_session)):
     categories = await _category_names(session)
 
-    rows = (
-        await session.execute(select(Undertable_appeal).order_by(Undertable_appeal.id))
+    all_appeals = (
+        await session.execute(
+            select(Undertable_appeal).order_by(Undertable_appeal.id)
+        )
     ).scalars().all()
 
-    answer_rows = (
-        await session.execute(select(AppealAnswers).order_by(AppealAnswers.id))
+    all_answers = (
+        await session.execute(
+            select(AppealAnswers).order_by(AppealAnswers.id)
+        )
     ).scalars().all()
 
-    last_answers: dict[int, AppealAnswers] = {}
-    for answer_row in answer_rows:
-        last_answers[answer_row.appeal_id] = answer_row
+    parent_of = {a.id: a.parent_id for a in all_appeals}
+
+    def root_of(appeal_id: int) -> int:
+        seen = set()
+        cur = appeal_id
+        while cur is not None and cur not in seen:
+            seen.add(cur)
+            p = parent_of.get(cur)
+            if p is None:
+                return cur
+            cur = p
+        return cur
+
+    groups: dict[int, list] = {}
+    for a in all_appeals:
+        groups.setdefault(root_of(a.id), []).append(a)
+
+    answers_by_appeal: dict[int, list] = {}
+    for ans in all_answers:
+        answers_by_appeal.setdefault(ans.appeal_id, []).append(ans)
 
     appeals = []
-    for row in rows:
-        last_answer = last_answers.get(row.id)
-        appeals.append(
-            {
-                "id": row.id,
-                "user_id": row.user_id,
-                'email_user': row.email_user,
-                'table_name': row.table_name,
-                'appeal': row.appeal,
-                'canceled': row.canceled,
-                'parent_id': row.parent_id,
-                'answered': last_answer is not None,
-                'reaction': last_answer.reaction if last_answer else None,
-                'answer': (last_answer.answer if last_answer else '') or '',
-                'answer_email': last_answer.email_user if last_answer else '',
-            }
-        )
+    reply_total: dict[int, int] = {}
+
+    for root_id, group in groups.items():
+        group_sorted = sorted(group, key=lambda x: x.id)
+        last_user = group_sorted[-1]
+        reply_total[root_id] = len(group_sorted) - 1
+
+        last_mod = None
+        for a in group_sorted:
+            for ans in answers_by_appeal.get(a.id, []):
+                if last_mod is None or ans.id > last_mod.id:
+                    last_mod = ans
+
+        appeals.append({
+            'id': last_user.id,
+            "root_id": root_id,
+            'user_id': last_user.user_id,
+            'email_user': last_user.email_user,
+            'table_name': last_user.table_name,
+            'appeal': last_user.appeal,
+            'canceled': last_user.canceled,
+            'parent_id': None if last_user.id == root_id else root_id,
+            'answered': last_mod is not None,
+            'reaction': last_mod.reaction if last_mod else None,
+            'answer': (last_mod.answer if last_mod else "") or "",
+            'answer_email': last_mod.email_user if last_mod else "",
+        })
+
+    appeals.sort(key=lambda x: x["id"], reverse=True)
 
     return templates.TemplateResponse(
-        "appeal_admid_check.html",
+        'appeal_admid_check.html', 
         {
-            "request": request,
-            "categories": categories,
-            "appeals": appeals,
-        }
+            'request': request, 
+            'categories': categories,
+            'appeals': appeals,
+            'reply_total': reply_total,
+        },
     )
 
+ 
 @router.post('/api/moderate', status_code=201)
 async def moderate_appeal(
     payload: AppealModerationIn,
@@ -156,4 +191,3 @@ async def get_answers(
             for answer, appeal in rows
         ],
     }
-
