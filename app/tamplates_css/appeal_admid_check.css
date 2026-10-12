@@ -401,6 +401,28 @@ body[data-filter="All"] .card { display: grid; }
     color: var(--muted);
 }
 
+.card-open {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 5px 12px;
+    font-family: var(--font-body);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+}
+
+.card-open:hover {
+    background: var(--ink);
+    color: var(--paper-2);
+}
+
 @media (max-width: 960px) {
     .wrap { grid-template-columns: 1fr; }
     .cats { position: static; }
